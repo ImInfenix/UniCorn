@@ -1,7 +1,10 @@
 {
-    "name": "Infenix.UniCorn.Editor",
-    "rootNamespace": "",
-    "references": [],
+    "name": "UniCorn",
+    "rootNamespace": "UniCorn",
+    "references": [
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4"
+    ],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
