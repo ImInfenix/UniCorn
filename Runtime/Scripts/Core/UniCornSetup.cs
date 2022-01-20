@@ -28,6 +28,7 @@ namespace UniCorn.Core
 
         private void InitializeServices()
         {
+            ServiceProvider.RegisterService(new InputService());
         }
     }
 }
