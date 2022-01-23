@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using UniCorn.Core;
 using UnityEngine;
@@ -8,33 +7,29 @@ namespace UniCorn.Input
 {
     public class InputService : IService
     {
-        private InputDefinition _inputDefinition;
+        private readonly InputDefinition _inputDefinition;
 
         private readonly Dictionary<InputAction, InputReader> _intentBindings = new Dictionary<InputAction, InputReader>();
 
+        public InputService(InputDefinition inputDefinition)
+        {
+            _inputDefinition = inputDefinition;
+        }
+
         public void Initialize()
         {
-            InputDefinition[] inputDefinitions = Resources.LoadAll<InputDefinition>(GlobalConstants.UNICORN_RESOURCES_FOLDER_PATH);
-
-            switch (inputDefinitions.Length)
-            {
-                case 0:
-                    Debug.LogWarning($"No input definitions found in {GlobalConstants.UNICORN_RESOURCES_FOLDER_PATH} folder.");
-                    return;
-                case > 1:
-                    Debug.LogError($"Multiple input definitions found in {GlobalConstants.UNICORN_RESOURCES_FOLDER_PATH} folder.");
-                    break;
-                default:
-                    _inputDefinition = inputDefinitions[0];
-                    break;
-            }
-
             InitializeBindings();
         }
 
         private void InitializeBindings()
         {
-            foreach (InputActionReference inputActionReference in _inputDefinition.ButtonsActions)
+            List<InputActionReference> actions = new List<InputActionReference>();
+
+            actions.AddRange(_inputDefinition.ButtonsActions);
+            actions.AddRange(_inputDefinition.OneAxisActions);
+            actions.AddRange(_inputDefinition.TwoAxisActions);
+
+            foreach (InputActionReference inputActionReference in actions)
             {
                 _intentBindings.Add(inputActionReference.action, new InputReader(typeof(bool)));
 
@@ -48,9 +43,11 @@ namespace UniCorn.Input
 
         private void OnActionPerformed(InputAction.CallbackContext context)
         {
-            if (_intentBindings.ContainsKey(context.action))
+            InputAction currentAction = context.action;
+
+            if (_intentBindings.ContainsKey(currentAction))
             {
-                Debug.Log(_intentBindings[context.action].GetValue(context));
+                Debug.Log(_intentBindings[currentAction].GetValue(context));
             }
         }
 

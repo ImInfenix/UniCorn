@@ -1,16 +1,16 @@
 {
-    "name": "UniCorn.Editor",
-    "rootNamespace": "UniCorn",
+    "name": "UniCorn.Standalone",
+    "rootNamespace": "UniCorn.Standalone",
     "references": [],
-    "includePlatforms": [
-        "Editor"
-    ],
+    "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": true,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "!UNICORN_FOR_ZENJECT"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }

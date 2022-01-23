@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace UniCorn.Core
+namespace UniCorn.Standalone
 {
     public static class ServiceProvider
     {
