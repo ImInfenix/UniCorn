@@ -1,10 +1,12 @@
 ﻿using UniCorn.Input;
 using UnityEngine;
 
-namespace UniCorn.Core
+namespace UniCorn.Standalone
 {
     public class UniCornSetup : MonoBehaviour
     {
+        [SerializeField] private InputDefinition inputDefinition;
+
         private UniCornSetup _instance;
 
         private void Awake()
@@ -28,7 +30,7 @@ namespace UniCorn.Core
 
         private void InitializeServices()
         {
-            ServiceProvider.RegisterService(new InputService());
+            ServiceProvider.RegisterService(new InputService(inputDefinition));
         }
     }
 }

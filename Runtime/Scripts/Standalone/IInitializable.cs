@@ -1,4 +1,4 @@
-﻿namespace UniCorn.Core
+﻿namespace UniCorn.Standalone
 {
     public interface IInitializable
     {
