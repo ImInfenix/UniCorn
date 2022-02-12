@@ -1,5 +1,5 @@
 ﻿using System;
-using JetBrains.Annotations;
+
 #if UNICORN_FOR_ZENJECT
 using Zenject;
 #else
@@ -10,6 +10,5 @@ namespace UniCorn.Core
 {
     public interface IService : IInitializable, IDisposable
     {
-
     }
 }
