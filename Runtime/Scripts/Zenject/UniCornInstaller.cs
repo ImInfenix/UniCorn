@@ -2,7 +2,7 @@ using UniCorn.Input;
 using UnityEngine;
 using Zenject;
 
-namespace WIGU.Installers
+namespace Orion.Installers
 {
     public class UniCornInstaller : MonoInstaller
     {
