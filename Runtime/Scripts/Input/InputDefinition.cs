@@ -4,7 +4,7 @@ using UnityEngine.InputSystem;
 
 namespace UniCorn.Input
 {
-    [CreateAssetMenu(fileName = "InputActionMap", menuName = "UniCorn/Input/InputActionMap")]
+    [CreateAssetMenu(fileName = "InputDefinition", menuName = "UniCorn/InputDefinition")]
     public class InputDefinition : ScriptableObject
     {
         [SerializeField] private InputActionReference[] _buttonsActions;
