@@ -1,16 +1,17 @@
+using UniCorn.Core;
 using UniCorn.Input;
 using UnityEngine;
 using Zenject;
 
-namespace Orion.Installers
+namespace UniCorn.Zenject
 {
     public class UniCornInstaller : MonoInstaller
     {
-        [SerializeField] private InputDefinition inputDefinition;
+        [SerializeField] private InputDefinition _inputDefinition;
 
         public override void InstallBindings()
         {
-            Container.Bind<InputDefinition>().FromInstance(inputDefinition).AsSingle();
+            Container.Bind<InputDefinition>().FromInstance(_inputDefinition).AsSingle();
 
             Container.BindInterfacesAndSelfTo<InputService>().AsSingle();
         }

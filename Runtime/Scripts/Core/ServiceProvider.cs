@@ -6,7 +6,7 @@ namespace UniCorn.Standalone
 {
     public static class ServiceProvider
     {
-        private static readonly Dictionary<Type, IService> _services = new Dictionary<Type, IService>();
+        private static readonly Dictionary<Type, IService> _services = new();
 
         static ServiceProvider()
         {

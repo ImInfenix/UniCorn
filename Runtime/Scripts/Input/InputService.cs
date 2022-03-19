@@ -9,7 +9,7 @@ namespace UniCorn.Input
     {
         private readonly InputDefinition _inputDefinition;
 
-        private readonly Dictionary<InputAction, InputReader> _intentBindings = new Dictionary<InputAction, InputReader>();
+        private readonly Dictionary<InputAction, InputReader> _intentBindings = new();
 
         public InputService(InputDefinition inputDefinition)
         {
