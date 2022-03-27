@@ -30,7 +30,7 @@ namespace UniCorn.Standalone
 
         private void InitializeServices()
         {
-            ServiceProvider.RegisterService(new InputService(inputDefinition));
+            //TODO initialize services in case of a basic setup, when not using the zenject implementation
         }
     }
 }
