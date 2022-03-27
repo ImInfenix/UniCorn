@@ -1,59 +1,84 @@
 using System.Collections.Generic;
 using UniCorn.Core;
-using UnityEngine;
+using UniCorn.Navigation;
+using UniCorn.Utils;
+using UnityEngine.AddressableAssets;
 using UnityEngine.InputSystem;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceLocations;
 
 namespace UniCorn.Input
 {
-    public class InputService : IService
+    public class InputService : AbstractAsynchronouslyLoadedService
     {
-        private readonly InputDefinition _inputDefinition;
+        private readonly IInputActionCollection _inputActionCollection;
+        private readonly NavigationService _navigationService;
 
-        private readonly Dictionary<InputAction, InputReader> _intentBindings = new();
+        private readonly Dictionary<InputAction, InputDefinition> _inputActionToInputDefinition = new();
 
-        public InputService(InputDefinition inputDefinition)
+        public InputService(IInputActionCollection inputActionCollection, NavigationService navigationService)
         {
-            _inputDefinition = inputDefinition;
+            _inputActionCollection = inputActionCollection;
+            _navigationService = navigationService;
         }
 
-        public void Initialize()
+        public override void Initialize()
         {
-            InitializeBindings();
-        }
+            base.Initialize();
 
-        private void InitializeBindings()
-        {
-            List<InputActionReference> actions = new List<InputActionReference>();
-
-            actions.AddRange(_inputDefinition.ButtonsActions);
-            actions.AddRange(_inputDefinition.OneAxisActions);
-            actions.AddRange(_inputDefinition.TwoAxisActions);
-
-            foreach (InputActionReference inputActionReference in actions)
+            foreach (InputAction inputAction in _inputActionCollection)
             {
-                _intentBindings.Add(inputActionReference.action, new InputReader(typeof(bool)));
+                inputAction.started += OnInputAction;
+                inputAction.performed += OnInputAction;
+                inputAction.canceled += OnInputAction;
 
-                inputActionReference.action.started += OnActionPerformed;
-                inputActionReference.action.performed += OnActionPerformed;
-                inputActionReference.action.canceled += OnActionPerformed;
+                inputAction.Enable();
+            }
 
-                inputActionReference.action.Enable();
+            LoadInputDefinitions();
+        }
+
+        public override void Dispose()
+        {
+            base.Initialize();
+
+            foreach (InputAction inputAction in _inputActionCollection)
+            {
+                inputAction.performed -= OnInputAction;
+                inputAction.canceled -= OnInputAction;
             }
         }
 
-        private void OnActionPerformed(InputAction.CallbackContext context)
+        private void LoadInputDefinitions()
         {
-            InputAction currentAction = context.action;
-
-            if (_intentBindings.ContainsKey(currentAction))
+            if (!AddressablesUtils.TryGetResourceLocation(UniCornAddressableKeys.UNICORN_ADDRESSABLE_INPUT_DEFINITIONS_KEY,
+                    typeof(InputDefinition), out IList<IResourceLocation> resourceLocation))
             {
-                Debug.Log(_intentBindings[currentAction].GetValue(context));
+                return;
+            }
+
+            AsyncOperationHandle<IList<InputDefinition>> loadInputDefinitionsHandle = Addressables.LoadAssetsAsync<InputDefinition>(resourceLocation, null);
+
+            loadInputDefinitionsHandle.Completed += OnInputDefinitionsLoaded;
+
+            RegisterAsynchronousOperation(loadInputDefinitionsHandle);
+        }
+
+        private void OnInputDefinitionsLoaded(AsyncOperationHandle<IList<InputDefinition>> operationHandle)
+        {
+            foreach (InputDefinition inputDefinition in operationHandle.Result)
+            {
+                _inputActionToInputDefinition.Add(inputDefinition.InputActionReference.action, inputDefinition);
             }
         }
 
-        public void Dispose()
+        protected override void OnAsyncOperationsCompleted()
         {
+        }
 
+        private void OnInputAction(InputAction.CallbackContext callbackContext)
+        {
+            _navigationService.OnInputAction(callbackContext, _inputActionToInputDefinition[callbackContext.action]);
         }
     }
 }
