@@ -5,8 +5,6 @@ namespace UniCorn.Standalone
 {
     public class UniCornSetup : MonoBehaviour
     {
-        [SerializeField] private InputDefinition inputDefinition;
-
         private UniCornSetup _instance;
 
         private void Awake()
