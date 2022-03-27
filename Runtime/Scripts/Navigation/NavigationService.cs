@@ -25,9 +25,9 @@ namespace UniCorn.Navigation
             _registeredItems.Remove(interactableItem);
         }
 
-        public void OnInputAction(InputAction.CallbackContext callbackContext, InputDefinition inputDefinition)
+        public bool OnInputAction(InputAction.CallbackContext callbackContext, InputDefinition inputDefinition)
         {
-            foreach (InteractableItem interactableItem in _registeredItems)
+            foreach (InteractableItem interactableItem in _layersList.GetLastOrDefault().RegisteredItems)
             {
                 if (!interactableItem.DoesListenToInputDefinition(inputDefinition))
                 {
@@ -46,7 +46,11 @@ namespace UniCorn.Navigation
                         break;
                 }
 
-                break;
+                return true;
+            }
+
+            return false;
+        }
             }
         }
     }

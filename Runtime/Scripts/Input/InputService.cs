@@ -6,15 +6,18 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.InputSystem;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
+using Zenject;
 
 namespace UniCorn.Input
 {
-    public class InputService : AbstractAsynchronouslyLoadedService
+    public class InputService : AbstractAsynchronouslyLoadedService, ITickable
     {
         private readonly IInputActionCollection _inputActionCollection;
         private readonly NavigationService _navigationService;
 
         private readonly Dictionary<InputAction, InputDefinition> _inputActionToInputDefinition = new();
+        
+        private bool _isInputEventConsumed = false;
 
         public InputService(IInputActionCollection inputActionCollection, NavigationService navigationService)
         {
@@ -72,13 +75,26 @@ namespace UniCorn.Input
             }
         }
 
-        protected override void OnAsyncOperationsCompleted()
-        {
-        }
-
         private void OnInputAction(InputAction.CallbackContext callbackContext)
         {
-            _navigationService.OnInputAction(callbackContext, _inputActionToInputDefinition[callbackContext.action]);
+            if (_isInputEventConsumed)
+            {
+                return;
+            }
+            
+            if (_navigationService.OnInputAction(callbackContext, _inputActionToInputDefinition[callbackContext.action]))
+            {
+                _isInputEventConsumed = true;
+            }
+        }
+
+        public void Tick()
+        {
+            _isInputEventConsumed = false;
+        }
+
+        protected override void OnAsyncOperationsCompleted()
+        {
         }
     }
 }
