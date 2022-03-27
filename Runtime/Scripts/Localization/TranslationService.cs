@@ -51,7 +51,7 @@ namespace UniCorn.Localization
 
         private IEnumerator LoadLanguageDataCoroutine(SystemLanguage language, Dictionary<string, string> mapToFill)
         {
-            if (!AddressablesUtils.TryGetResourceLocation(new[] {language.GetUniCornAddressableKey()}, Addressables.MergeMode.Intersection, typeof(TextAsset),
+            if (!AddressablesUtils.TryGetResourceLocation(language.GetUniCornAddressableKey(), typeof(TextAsset),
                     out IList<IResourceLocation> resourceLocation))
             {
                 yield break;
