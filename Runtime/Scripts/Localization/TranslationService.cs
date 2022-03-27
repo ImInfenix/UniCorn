@@ -20,9 +20,8 @@ namespace UniCorn.Localization
         private readonly Dictionary<string, string> _fallbackKeysMap = new();
         private readonly Dictionary<string, string> _currentKeysMap = new();
 
-        public TranslationService(LocalizationSettings localizationSettings, UniCornMonoBehaviour uniCornMonoBehaviour)
+        public TranslationService(LocalizationSettings localizationSettings, UniCornMonoBehaviour uniCornMonoBehaviour) : base(localizationSettings)
         {
-            _localizationSettings = localizationSettings;
             _uniCornMonoBehaviour = uniCornMonoBehaviour;
         }
 

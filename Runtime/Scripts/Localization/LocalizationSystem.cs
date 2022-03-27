@@ -7,9 +7,8 @@ namespace UniCorn.Localization
     {
         private readonly TranslationService _translationService;
 
-        public LocalizationSystem(LocalizationSettings localizationSettings, TranslationService translationService)
+        public LocalizationSystem(LocalizationSettings localizationSettings, TranslationService translationService) : base(localizationSettings)
         {
-            _localizationSettings = localizationSettings;
             _translationService = translationService;
         }
 
