@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UniCorn.Core;
 using UniCorn.Input;
 using UniCorn.Utils;
 using UnityEngine.InputSystem;
@@ -7,22 +8,37 @@ namespace UniCorn.Navigation
 {
     public class NavigationService
     {
-        private readonly List<InteractableItem> _registeredItems = new();
         private readonly Dictionary<string, InputDefinition> _registeredInputDefinitions = new();
+        private readonly List<NavigationLayer> _layersList = new();
 
-        public void Register(InteractableItem interactableItem)
+        public void Register(InteractableItem itemToRegister, AbstractLayout layoutToRegisterOn)
         {
-            _registeredItems.Add(interactableItem);
+            AddLayerIfDoesntExist(layoutToRegisterOn);
+            
+            NavigationLayer layerToRegisterOn = GetLayer(layoutToRegisterOn);
+            layerToRegisterOn.Register(itemToRegister);
 
-            foreach (InputDefinition inputDefinition in interactableItem.InputDefinitions)
+            foreach (InputDefinition inputDefinition in itemToRegister.InputDefinitions)
             {
                 _registeredInputDefinitions.AddIfDoesntExist(inputDefinition.name, inputDefinition);
             }
         }
 
-        public void Unregister(InteractableItem interactableItem)
+        public void Unregister(InteractableItem itemToRegister, AbstractLayout layoutToUnregisterFrom)
         {
-            _registeredItems.Remove(interactableItem);
+            NavigationLayer layerToRegisterOn = GetLayer(layoutToUnregisterFrom);
+
+            if (layerToRegisterOn == null)
+            {
+                return;
+            }
+            
+            layerToRegisterOn.Unregister(itemToRegister);
+
+            if (layerToRegisterOn.RegisteredItems.Count == 0)
+            {
+                RemoveLayerIfExists(layoutToUnregisterFrom);
+            }
         }
 
         public bool OnInputAction(InputAction.CallbackContext callbackContext, InputDefinition inputDefinition)
@@ -51,7 +67,55 @@ namespace UniCorn.Navigation
 
             return false;
         }
+
+        private void AddLayerIfDoesntExist(AbstractLayout layoutToAdd)
+        {
+            if (DoesLayerExist(layoutToAdd))
+            {
+                return;
             }
+            
+            _layersList.Add(new NavigationLayer(layoutToAdd));
+        }
+
+        private void RemoveLayerIfExists(AbstractLayout layoutToRemove)
+        {
+            if (!DoesLayerExist(layoutToRemove))
+            {
+                return;
+            }
+            
+            _layersList.RemoveAt(GetLayerIndex(layoutToRemove));
+        }
+
+        private bool DoesLayerExist(AbstractLayout associatedLayout)
+        {
+            return GetLayer(associatedLayout) != null;
+        }
+
+        private NavigationLayer GetLayer(AbstractLayout layoutAssociatedToLayer)
+        {
+            int layerIndex = GetLayerIndex(layoutAssociatedToLayer);
+
+            if (layerIndex < 0)
+            {
+                return null;
+            }
+            
+            return _layersList[layerIndex];
+        }
+
+        private int GetLayerIndex(AbstractLayout layoutAssociatedToLayer)
+        {
+            for (int i = _layersList.Count - 1; i >= 0; i--)
+            {
+                if (_layersList[i].AssociatedLayout == layoutAssociatedToLayer)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
         }
     }
 }

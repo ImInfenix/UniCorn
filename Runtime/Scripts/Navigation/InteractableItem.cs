@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using UniCorn.Core;
 using UniCorn.Input;
 using UnityEngine;
 using UnityEngine.UI;
@@ -18,6 +19,7 @@ namespace UniCorn.Navigation
         public Action onItemPressed;
         public Action onItemReleased;
 
+        private AbstractLayout _parentLayout;
         private Selectable _selectable;
 
         public IEnumerable<InputDefinition> InputDefinitions => _inputDefinitions;
@@ -42,6 +44,11 @@ namespace UniCorn.Navigation
         {
             _inputService = inputService;
             _navigationService = navigationService;
+        }
+
+        private void Awake()
+        {
+            _parentLayout = GetComponentInParent<AbstractLayout>();
         }
 
         private void OnEnable()
@@ -76,12 +83,12 @@ namespace UniCorn.Navigation
 
         private void Register()
         {
-            _navigationService.Register(this);
+            _navigationService.Register(this, _parentLayout);
         }
 
         private void Unregister()
         {
-            _navigationService.Unregister(this);
+            _navigationService.Unregister(this, _parentLayout);
         }
 
         public bool DoesListenToInputDefinition(InputDefinition inputDefinition)
