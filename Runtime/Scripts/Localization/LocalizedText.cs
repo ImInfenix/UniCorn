@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using TMPro;
 
@@ -29,5 +30,12 @@ namespace UniCorn.Localization
          {
              _text.text = _translationService.Localize(_localizationKey);
          }
+
+#if UNITY_EDITOR
+         private void OnValidate()
+         {
+             GetComponent<TMP_Text>().text = _localizationKey;
+         }
+ #endif
     }
 }
