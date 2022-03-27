@@ -5,14 +5,14 @@ namespace UniCorn.Localization
 {
     public abstract class AbstractLocalizationService : IService
     {
-        protected LocalizationSettings _localizationSettings;
+        protected readonly LocalizationSettings _localizationSettings;
         
         protected SystemLanguage _fallbackLanguage;
 
-        // public AbstractLocalizationService(LocalizationSettings localizationSettings)
-        // {
-        //     _localizationSettings = localizationSettings;
-        // }
+        public AbstractLocalizationService(LocalizationSettings localizationSettings)
+        {
+            _localizationSettings = localizationSettings;
+        }
         
         public virtual void Initialize()
         {
