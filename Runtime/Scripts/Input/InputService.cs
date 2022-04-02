@@ -17,7 +17,7 @@ namespace UniCorn.Input
         private readonly NavigationService _navigationService;
 
         private readonly Dictionary<InputAction, InputDefinition> _inputActionToInputDefinition = new();
-        
+
         private bool _isInputEventConsumed = false;
 
         public InputService(IInputActionCollection inputActionCollection, NavigationService navigationService)
@@ -78,12 +78,12 @@ namespace UniCorn.Input
 
         private void OnInputAction(InputAction.CallbackContext callbackContext)
         {
-            if (_isInputEventConsumed)
+            if (_isInputEventConsumed || !_inputActionToInputDefinition.TryGetValue(callbackContext.action, out InputDefinition inputDefinition))
             {
                 return;
             }
-            
-            if (_navigationService.OnInputAction(callbackContext, _inputActionToInputDefinition[callbackContext.action]))
+
+            if (_navigationService.OnInputAction(callbackContext, inputDefinition))
             {
                 _isInputEventConsumed = true;
             }
