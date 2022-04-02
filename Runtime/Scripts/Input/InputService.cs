@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UniCorn.Core;
+using UniCorn.Core.AsynchronousLoading;
 using UniCorn.Navigation;
 using UniCorn.Utils;
 using UnityEngine.AddressableAssets;
@@ -91,10 +92,6 @@ namespace UniCorn.Input
         public void Tick()
         {
             _isInputEventConsumed = false;
-        }
-
-        protected override void OnAsyncOperationsCompleted()
-        {
         }
     }
 }
