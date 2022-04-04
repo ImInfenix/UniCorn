@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -24,11 +25,9 @@ namespace UniCorn
             _scenesWindow.titleContent = new GUIContent("Scenes Window");
             _scenesWindow.maximized = true;
             _scenesWindow.Show();
-
-            UpdateWindowContent();
         }
 
-        private static void UpdateWindowContent()
+        public static void UpdateWindowContent()
         {
             string[] existingScenesGuids = AssetDatabase.FindAssets($"t:scene", new[] {"Assets"});
 
