@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using UnityEditor;
 using UnityEditor.SceneManagement;
@@ -64,7 +63,8 @@ namespace UniCorn
             int maximumButtonPerRaw = Mathf.Max((int) _scenesWindow.position.width / (BUTTON_SIZE.x + WINDOW_MARGIN_VECTOR.x), 1);
 
             Vector2Int totalNumberOfButtons = new Vector2Int(maximumButtonPerRaw, _existingScenesNames.Length / maximumButtonPerRaw);
-            Rect viewRect = new Rect(Vector2.zero, new Vector2(windowContentSize.width - WINDOW_MARGIN_VECTOR.x / 2, BUTTON_SIZE.y * totalNumberOfButtons.y + WINDOW_MARGIN_VECTOR.y * 2));
+            Rect viewRect = new Rect(Vector2.zero,
+                new Vector2(windowContentSize.width - WINDOW_MARGIN_VECTOR.x / 2, BUTTON_SIZE.y * totalNumberOfButtons.y + WINDOW_MARGIN_VECTOR.y * 2));
 
             _scrollPosition = GUI.BeginScrollView(windowContentSize, _scrollPosition, viewRect);
 
@@ -82,11 +82,19 @@ namespace UniCorn
 
                 if (GUI.Button(new Rect(positionInGrid, BUTTON_SIZE), _existingScenesNames[i]))
                 {
-                    EditorSceneManager.OpenScene(_existingScenesPaths[i]);
+                    LoadScene(_existingScenesPaths[i]);
                 }
             }
 
             GUI.EndScrollView();
+        }
+
+        private void LoadScene(string scenePath)
+        {
+            if (EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+            {
+                EditorSceneManager.OpenScene(scenePath);
+            }
         }
     }
 }
