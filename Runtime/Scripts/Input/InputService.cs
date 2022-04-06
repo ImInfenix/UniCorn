@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UniCorn.Core;
 using UniCorn.Core.AsynchronousLoading;
@@ -16,11 +17,11 @@ namespace UniCorn.Input
         private readonly IInputActionCollection _inputActionCollection;
         private readonly NavigationService _navigationService;
 
-        private readonly Dictionary<InputAction, InputDefinition> _inputActionToInputDefinition = new();
+        private readonly Dictionary<Guid, InputDefinition> _inputActionToInputDefinition = new();
 
-        private bool _isInputEventConsumed = false;
+        private bool _isInputEventConsumed;
 
-        public InputService(IInputActionCollection inputActionCollection, NavigationService navigationService)
+        protected InputService(IInputActionCollection inputActionCollection, NavigationService navigationService)
         {
             _inputActionCollection = inputActionCollection;
             _navigationService = navigationService;
@@ -72,13 +73,13 @@ namespace UniCorn.Input
         {
             foreach (InputDefinition inputDefinition in operationHandle.Result)
             {
-                _inputActionToInputDefinition.Add(inputDefinition.InputActionReference.action, inputDefinition);
+                _inputActionToInputDefinition.Add(inputDefinition.InputActionReference.action.id, inputDefinition);
             }
         }
 
         private void OnInputAction(InputAction.CallbackContext callbackContext)
         {
-            if (_isInputEventConsumed || !_inputActionToInputDefinition.TryGetValue(callbackContext.action, out InputDefinition inputDefinition))
+            if (_isInputEventConsumed || !_inputActionToInputDefinition.TryGetValue(callbackContext.action.id, out InputDefinition inputDefinition))
             {
                 return;
             }
