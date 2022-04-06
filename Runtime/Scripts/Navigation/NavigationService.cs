@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UniCorn.Core;
 using UniCorn.Input;
 using UniCorn.Utils;
@@ -14,7 +15,7 @@ namespace UniCorn.Navigation
         public void Register(InteractableItem itemToRegister, AbstractLayout layoutToRegisterOn)
         {
             AddLayerIfDoesntExist(layoutToRegisterOn);
-            
+
             NavigationLayer layerToRegisterOn = GetLayer(layoutToRegisterOn);
             layerToRegisterOn.Register(itemToRegister);
 
@@ -32,7 +33,7 @@ namespace UniCorn.Navigation
             {
                 return;
             }
-            
+
             layerToRegisterOn.Unregister(itemToRegister);
 
             if (layerToRegisterOn.RegisteredItems.Count == 0)
@@ -43,6 +44,19 @@ namespace UniCorn.Navigation
 
         public bool OnInputAction(InputAction.CallbackContext callbackContext, InputDefinition inputDefinition)
         {
+            if (!OnInputActionInternal(callbackContext, inputDefinition, out Action actionToExecute))
+            {
+                return false;
+            }
+
+            actionToExecute.Invoke();
+            return true;
+        }
+
+        private bool OnInputActionInternal(InputAction.CallbackContext callbackContext, InputDefinition inputDefinition, out Action actionToExecute)
+        {
+            actionToExecute = null;
+
             foreach (InteractableItem interactableItem in _layersList.GetLastOrDefault().RegisteredItems)
             {
                 if (!interactableItem.DoesListenToInputDefinition(inputDefinition))
@@ -50,19 +64,26 @@ namespace UniCorn.Navigation
                     continue;
                 }
 
+                bool consumedInput = false;
+
                 switch (callbackContext.phase)
                 {
                     case InputActionPhase.Started:
-                        interactableItem.OnItemPressed();
+                        actionToExecute = interactableItem.OnItemPressed;
+                        consumedInput = interactableItem.onItemPressed != null;
                         break;
                     case InputActionPhase.Performed:
                         break;
                     case InputActionPhase.Canceled:
-                        interactableItem.OnItemReleased();
+                        actionToExecute = interactableItem.OnItemReleased;
+                        consumedInput = interactableItem.onItemReleased != null;
                         break;
                 }
 
-                return true;
+                if (consumedInput)
+                {
+                    return true;
+                }
             }
 
             return false;
@@ -74,7 +95,7 @@ namespace UniCorn.Navigation
             {
                 return;
             }
-            
+
             _layersList.Add(new NavigationLayer(layoutToAdd));
         }
 
@@ -84,7 +105,7 @@ namespace UniCorn.Navigation
             {
                 return;
             }
-            
+
             _layersList.RemoveAt(GetLayerIndex(layoutToRemove));
         }
 
@@ -101,7 +122,7 @@ namespace UniCorn.Navigation
             {
                 return null;
             }
-            
+
             return _layersList[layerIndex];
         }
 
