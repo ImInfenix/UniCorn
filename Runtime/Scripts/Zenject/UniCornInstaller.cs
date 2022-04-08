@@ -1,9 +1,7 @@
 using UniCorn.Core;
-using UniCorn.Input;
 using UniCorn.Localization;
 using UniCorn.Navigation;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace UniCorn.Zenject
 {
