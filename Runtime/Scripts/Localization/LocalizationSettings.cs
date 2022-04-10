@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace UniCorn.Localization
 {
-    [CreateAssetMenu(fileName = "LocalizationSettings", menuName = "UniCorn/LocalizationSettings")]
+    [CreateAssetMenu(fileName = nameof(LocalizationSettings), menuName = nameof(UniCorn) + "/" + nameof(LocalizationSettings))]
     public class LocalizationSettings : ScriptableObject
     {
         [SerializeField] private SystemLanguage _defaultLanguage = SystemLanguage.English;
