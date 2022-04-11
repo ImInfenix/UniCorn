@@ -4,7 +4,9 @@ using UniCorn.Core;
 using UniCorn.Input;
 using UnityEngine;
 using UnityEngine.UI;
+#if UNICORN_FOR_ZENJECT
 using Zenject;
+#endif
 
 namespace UniCorn.Navigation
 {
