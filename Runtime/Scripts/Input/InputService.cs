@@ -1,3 +1,8 @@
+#if UNICORN_FOR_ZENJECT
+using Zenject;
+#else
+using UniCorn.Standalone;
+#endif
 using System;
 using System.Collections.Generic;
 using UniCorn.Core;
@@ -8,7 +13,6 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.InputSystem;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.ResourceManagement.ResourceLocations;
-using Zenject;
 
 namespace UniCorn.Input
 {
