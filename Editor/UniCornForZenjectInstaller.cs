@@ -6,7 +6,7 @@ using UnityEditor.Build;
 
 namespace UniCorn.Editor
 {
-    public static class UniCornInstaller
+    public static class UniCornForZenjectInstaller
     {
         private const string ZENJECT_INSTALLER_MENU_ITEM_PATH = "UniCorn/Install For Zenject";
 
