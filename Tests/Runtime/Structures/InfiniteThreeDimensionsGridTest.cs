@@ -1,11 +1,11 @@
 using NUnit.Framework;
+using UniCorn.Structures;
 using UnityEngine;
 
-namespace UniCorn.Tests
+namespace UniCorn.Tests.Structures
 {
     public class InfiniteThreeDimensionsGridTest
     {
-
         private readonly Vector3 _cellSize = Vector3.one * 2;
         private static readonly int _batchSize = 16;
 
@@ -34,7 +34,7 @@ namespace UniCorn.Tests
         }
 
         [Test]
-        public void PositionMappingInBatchTests()
+        public void PositionMappingInBatch()
         {
             Assert.AreEqual(_batchEntryPosition, _grid.GetPositionInBatch(_batchEntryPosition));
             Assert.AreEqual(_inBatchPosition, _grid.GetPositionInBatch(_inBatchPosition));
@@ -49,7 +49,7 @@ namespace UniCorn.Tests
         }
 
         [Test]
-        public void PositionMappingTests()
+        public void PositionMapping()
         {
             Assert.AreEqual(Vector3Int.zero, _grid.GetBatchCoordinates(_batchEntryPosition));
             Assert.AreEqual(Vector3Int.zero, _grid.GetBatchCoordinates(_inBatchPosition));
@@ -57,7 +57,7 @@ namespace UniCorn.Tests
         }
 
         [Test]
-        public void SingleBatchTest()
+        public void SingleBatch()
         {
             Assert.IsNull(_grid.Get(_batchEntryPosition));
             Assert.IsNull(_grid.Get(_inBatchPosition));
@@ -74,7 +74,7 @@ namespace UniCorn.Tests
         }
 
         [Test]
-        public void PositionInWorldTest()
+        public void PositionInWorld()
         {
             Assert.AreEqual(Vector3.zero, _grid.GetPositionInWorld(Vector3Int.zero));
             Assert.AreEqual(_cellSize, _grid.GetPositionInWorld(Vector3Int.one));
