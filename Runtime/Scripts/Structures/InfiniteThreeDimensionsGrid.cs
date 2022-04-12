@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace UniCorn
+namespace UniCorn.Structures
 {
     public class InfiniteThreeDimensionsGrid<T> where T : class
     {
