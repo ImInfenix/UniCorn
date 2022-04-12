@@ -6,7 +6,7 @@ namespace UniCorn.Tests
     public class InfiniteThreeDimensionsGridTest
     {
 
-        private readonly Vector3 _cellSize = Vector3.one;
+        private readonly Vector3 _cellSize = Vector3.one * 2;
         private static readonly int _batchSize = 16;
 
         private readonly Vector3Int _batchEntryPosition = Vector3Int.zero;
@@ -71,6 +71,14 @@ namespace UniCorn.Tests
 
             _grid.Set(WORD_3, _batchEndPosition);
             Assert.AreSame(WORD_3, _grid.Get(_batchEndPosition));
+        }
+
+        [Test]
+        public void PositionInWorldTest()
+        {
+            Assert.AreEqual(Vector3.zero, _grid.GetPositionInWorld(Vector3Int.zero));
+            Assert.AreEqual(_cellSize, _grid.GetPositionInWorld(Vector3Int.one));
+            Assert.AreEqual(-_cellSize, -_grid.GetPositionInWorld(Vector3Int.one));
         }
     }
 }
