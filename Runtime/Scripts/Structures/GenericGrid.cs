@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace UniCorn.Structures
 {
-    public class Grid<T>
+    public class GenericGrid<T>
     {
         public int Width { get; }
         public int Height { get; }
@@ -21,7 +21,7 @@ namespace UniCorn.Structures
             set => GridContent[x, y] = value;
         }
 
-        public Grid(int width, int height)
+        public GenericGrid(int width, int height)
         {
             if (width <= 0)
             {
