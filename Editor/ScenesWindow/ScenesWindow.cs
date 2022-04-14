@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using System.IO;
+using UniCorn.Utils;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
@@ -9,8 +11,8 @@ namespace UniCorn
     {
         private static ScenesWindow _scenesWindow;
 
-        private static string[] _existingScenesPaths;
-        private static string[] _existingScenesNames;
+        private static List<string> _existingScenesPaths = new();
+        private static List<string> _existingScenesNames = new();
 
         private static readonly Vector2Int WINDOW_MARGIN_VECTOR = new(0, 5);
         private static readonly Vector2Int BUTTON_SIZE = new(150, 20);
@@ -30,14 +32,22 @@ namespace UniCorn
         {
             string[] existingScenesGuids = AssetDatabase.FindAssets($"t:scene", new[] {"Assets"});
 
-            _existingScenesPaths = new string[existingScenesGuids.Length];
-            _existingScenesNames = new string[existingScenesGuids.Length];
+            _existingScenesPaths.Clear();
+            _existingScenesNames.Clear();
 
             for (int i = 0; i < existingScenesGuids.Length; i++)
             {
                 string sceneGuid = existingScenesGuids[i];
-                _existingScenesPaths[i] = AssetDatabase.GUIDToAssetPath(sceneGuid);
-                _existingScenesNames[i] = Path.GetFileNameWithoutExtension(_existingScenesPaths[i]);
+                string sceneAssetPath = AssetDatabase.GUIDToAssetPath(sceneGuid);
+
+                if (sceneAssetPath.ToLower().Contains("template"))
+                {
+                    continue;
+                }
+
+                _existingScenesPaths.Add(sceneAssetPath);
+                _existingScenesNames.Add(Path.GetFileNameWithoutExtension(_existingScenesPaths[i]));
+
             }
         }
 
@@ -48,7 +58,7 @@ namespace UniCorn
                 _scenesWindow = GetWindow<ScenesWindow>();
             }
 
-            if (_existingScenesNames == null)
+            if (_existingScenesNames.IsEmpty())
             {
                 UpdateWindowContent();
 
@@ -62,7 +72,7 @@ namespace UniCorn
 
             int maximumButtonPerRaw = Mathf.Max((int) windowContentSize.width / (BUTTON_SIZE.x + WINDOW_MARGIN_VECTOR.x), 1);
 
-            Vector2Int totalNumberOfButtons = new Vector2Int(maximumButtonPerRaw, _existingScenesNames.Length / maximumButtonPerRaw);
+            Vector2Int totalNumberOfButtons = new Vector2Int(maximumButtonPerRaw, _existingScenesNames.Count / maximumButtonPerRaw);
             Rect viewRect = new Rect(-WINDOW_MARGIN_VECTOR / 2,
                 new Vector2(windowContentSize.width - WINDOW_MARGIN_VECTOR.x / 2f, BUTTON_SIZE.y * totalNumberOfButtons.y + WINDOW_MARGIN_VECTOR.y * 2));
 
@@ -71,7 +81,7 @@ namespace UniCorn
             float positionAvailableForButtons = viewRect.width - WINDOW_MARGIN_VECTOR.x * 2;
             float positionAvailablePerButton = positionAvailableForButtons / maximumButtonPerRaw;
 
-            for (int i = 0; i < _existingScenesNames.Length; i++)
+            for (int i = 0; i < _existingScenesNames.Count; i++)
             {
                 Vector2 positionInGridAsCell = new Vector2Int(i % maximumButtonPerRaw, i / maximumButtonPerRaw);
                 Vector2 positionInGrid = (BUTTON_SIZE + WINDOW_MARGIN_VECTOR) * positionInGridAsCell;

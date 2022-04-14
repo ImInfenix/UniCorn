@@ -1,7 +1,9 @@
 {
     "name": "UniCorn.Editor",
     "rootNamespace": "UniCorn",
-    "references": [],
+    "references": [
+        "GUID:2c725027461a7f44ea02c70b91369f04"
+    ],
     "includePlatforms": [
         "Editor"
     ],
