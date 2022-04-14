@@ -4,7 +4,7 @@ using UniCorn.Core;
 using UnityEngine;
 using UnityEngine.TestTools;
 
-namespace UniCorn.Tests
+namespace UniCorn.Tests.Core
 {
     public class UniCornMonoBehaviourTest
     {
