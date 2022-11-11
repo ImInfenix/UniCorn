@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 
-namespace UniCorn
+namespace UniCorn.Editor.ScenesWindow
 {
     public class ScenesWindow : EditorWindow
     {

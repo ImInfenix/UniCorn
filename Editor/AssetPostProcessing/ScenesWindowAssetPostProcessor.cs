@@ -1,7 +1,7 @@
 using System.Linq;
 using UnityEditor;
 
-namespace UniCorn
+namespace UniCorn.Editor.AssetPostProcessing
 {
     public class ScenesWindowAssetPostProcessor : AssetPostprocessor
     {
@@ -9,7 +9,7 @@ namespace UniCorn
 
         private static void OnPostprocessAllAssets(string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
         {
-            if (!EditorWindow.HasOpenInstances<ScenesWindow>())
+            if (!EditorWindow.HasOpenInstances<ScenesWindow.ScenesWindow>())
             {
                 return;
             }
@@ -19,7 +19,7 @@ namespace UniCorn
                 movedAssets.Any(assetPath => assetPath.EndsWith(SCENE_FILES_EXTENSION)) ||
                 movedFromAssetPaths.Any(assetPath => assetPath.EndsWith(SCENE_FILES_EXTENSION)))
             {
-                ScenesWindow.UpdateWindowContent();
+                ScenesWindow.ScenesWindow.UpdateWindowContent();
             }
         }
     }
