@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using UniCorn.Utils;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.ResourceManagement.ResourceLocations;
 
 namespace UniCorn.Core.AsynchronousLoading
 {
@@ -28,6 +30,20 @@ namespace UniCorn.Core.AsynchronousLoading
                     Addressables.Release(operationHandle);
                 }
             }
+        }
+
+        protected void LoadAssetsAsync<T>(string key, Action<AsyncOperationHandle<IList<T>>> onAssetsLoaded)
+        {
+            if (!AddressablesUtils.TryGetResourceLocation(key, typeof(T), out IList<IResourceLocation> resourceLocation))
+            {
+                return;
+            }
+
+            AsyncOperationHandle<IList<T>> loadAssetsOperation = Addressables.LoadAssetsAsync<T>(resourceLocation, null);
+            
+            loadAssetsOperation.OnComplete(onAssetsLoaded);
+
+            RegisterAsynchronousOperation(loadAssetsOperation);
         }
 
         protected void RegisterAsynchronousOperation(AsyncOperationHandle operationHandle)

@@ -1,18 +1,15 @@
-#if UNICORN_FOR_ZENJECT
-using Zenject;
-#else
-using UniCorn.Standalone;
-#endif
 using System;
 using System.Collections.Generic;
 using UniCorn.Core;
 using UniCorn.Core.AsynchronousLoading;
 using UniCorn.Navigation;
-using UniCorn.Utils;
-using UnityEngine.AddressableAssets;
 using UnityEngine.InputSystem;
 using UnityEngine.ResourceManagement.AsyncOperations;
-using UnityEngine.ResourceManagement.ResourceLocations;
+#if UNICORN_FOR_ZENJECT
+using Zenject;
+#else
+using UniCorn.Standalone;
+#endif
 
 namespace UniCorn.Input
 {
@@ -44,7 +41,7 @@ namespace UniCorn.Input
                 inputAction.Enable();
             }
 
-            LoadInputDefinitions();
+            LoadAssetsAsync<InputDefinition>(UniCornAddressableKeys.UNICORN_ADDRESSABLE_INPUT_DEFINITIONS_KEY, OnInputDefinitionsLoaded);
         }
 
         public override void Dispose()
@@ -56,21 +53,6 @@ namespace UniCorn.Input
                 inputAction.performed -= OnInputAction;
                 inputAction.canceled -= OnInputAction;
             }
-        }
-
-        private void LoadInputDefinitions()
-        {
-            if (!AddressablesUtils.TryGetResourceLocation(UniCornAddressableKeys.UNICORN_ADDRESSABLE_INPUT_DEFINITIONS_KEY,
-                    typeof(InputDefinition), out IList<IResourceLocation> resourceLocation))
-            {
-                return;
-            }
-
-            AsyncOperationHandle<IList<InputDefinition>> loadInputDefinitionsHandle = Addressables.LoadAssetsAsync<InputDefinition>(resourceLocation, null);
-
-            loadInputDefinitionsHandle.Completed += OnInputDefinitionsLoaded;
-
-            RegisterAsynchronousOperation(loadInputDefinitionsHandle);
         }
 
         private void OnInputDefinitionsLoaded(AsyncOperationHandle<IList<InputDefinition>> operationHandle)
