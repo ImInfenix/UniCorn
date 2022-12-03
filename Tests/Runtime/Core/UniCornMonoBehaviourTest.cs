@@ -1,37 +1,37 @@
 ﻿using System.Collections;
 using NUnit.Framework;
 using UniCorn.Core;
-using UnityEngine;
 using UnityEngine.TestTools;
+using Zenject;
 
-namespace UniCorn.Tests.Core
+namespace UniCorn.Tests.Runtime.Core
 {
-    public class UniCornMonoBehaviourTest
+    public class UniCornMonoBehaviourTest : ZenjectIntegrationTestFixture
     {
         const int ITERATIONS_COUNT = 5;
 
-        private UniCornMonoBehaviour _uniCornMonoBehaviour;
+        [Inject] private ICoroutineHandler _coroutineHandler;
 
         private int _counter;
 
         [SetUp]
-        public void Setup()
+        public void SetupTests()
         {
-            _uniCornMonoBehaviour = new GameObject("UniCornMonoBehaviour").AddComponent<UniCornMonoBehaviour>();
             _counter = 0;
+
+            InstallContext();
         }
 
-        [TearDown]
-        public void TearDown()
+        private void InstallContext()
         {
-            _uniCornMonoBehaviour.StopAllCoroutines();
-            Object.Destroy(_uniCornMonoBehaviour.gameObject);
+            PreInstall();
+            PostInstall();
         }
 
         [UnityTest]
         public IEnumerator ExecuteCoroutineTest()
         {
-            _uniCornMonoBehaviour.RunCoroutineFromUniCorn(SimpleCounter(ITERATIONS_COUNT));
+            _coroutineHandler.RunCoroutineFromUniCorn(SimpleCounter(ITERATIONS_COUNT));
 
             for (int i = 0; i < ITERATIONS_COUNT; i++)
             {
@@ -44,11 +44,11 @@ namespace UniCorn.Tests.Core
         [UnityTest]
         public IEnumerator CancelCoroutineTest()
         {
-            CoroutineCancellationToken cancellationToken = _uniCornMonoBehaviour.RunCoroutineFromUniCorn(SimpleCounter(ITERATIONS_COUNT));
+            CoroutineCancellationToken cancellationToken = _coroutineHandler.RunCoroutineFromUniCorn(SimpleCounter(ITERATIONS_COUNT));
 
             yield return null;
 
-            Assert.AreEqual(true, _uniCornMonoBehaviour.CancelCoroutine(cancellationToken));
+            Assert.AreEqual(true, _coroutineHandler.CancelCoroutine(cancellationToken));
 
             for (int i = 0; i < ITERATIONS_COUNT - 1; i++)
             {
@@ -61,35 +61,35 @@ namespace UniCorn.Tests.Core
         [UnityTest]
         public IEnumerator CancelMultipleTimesCoroutineTest()
         {
-            CoroutineCancellationToken cancellationToken = _uniCornMonoBehaviour.RunCoroutineFromUniCorn(SimpleCounter(3));
+            CoroutineCancellationToken cancellationToken = _coroutineHandler.RunCoroutineFromUniCorn(SimpleCounter(3));
 
             yield return null;
 
-            Assert.AreEqual(true, _uniCornMonoBehaviour.CancelCoroutine(cancellationToken));
+            Assert.AreEqual(true, _coroutineHandler.CancelCoroutine(cancellationToken));
 
             yield return null;
 
-            Assert.AreEqual(false, _uniCornMonoBehaviour.CancelCoroutine(cancellationToken));
-            
+            Assert.AreEqual(false, _coroutineHandler.CancelCoroutine(cancellationToken));
+
             yield return null;
-            
+
             Assert.AreEqual(1, _counter);
         }
 
         [UnityTest]
         public IEnumerator DontCancelTerminatedCoroutinesTest()
         {
-            CoroutineCancellationToken cancellationToken = _uniCornMonoBehaviour.RunCoroutineFromUniCorn(SimpleCounter(3));
+            CoroutineCancellationToken cancellationToken = _coroutineHandler.RunCoroutineFromUniCorn(SimpleCounter(3));
 
             for (int i = 0; i < ITERATIONS_COUNT; i++)
             {
                 yield return null;
             }
 
-            Assert.AreEqual(false, _uniCornMonoBehaviour.CancelCoroutine(cancellationToken));
+            Assert.AreEqual(false, _coroutineHandler.CancelCoroutine(cancellationToken));
         }
 
-        IEnumerator SimpleCounter(int iterationsCount)
+        private IEnumerator SimpleCounter(int iterationsCount)
         {
             for (int i = 0; i < iterationsCount; i++)
             {
