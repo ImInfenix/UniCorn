@@ -15,14 +15,14 @@ namespace UniCorn.Localization
 {
     public class TranslationService : AbstractLocalizationService
     {
-        private readonly UniCornMonoBehaviour _uniCornMonoBehaviour;
+        private readonly ICoroutineHandler _coroutineHandler;
 
         private readonly Dictionary<string, string> _fallbackKeysMap = new();
         private readonly Dictionary<string, string> _currentKeysMap = new();
 
-        public TranslationService(LocalizationSettings localizationSettings, UniCornMonoBehaviour uniCornMonoBehaviour) : base(localizationSettings)
+        public TranslationService(LocalizationSettings localizationSettings, ICoroutineHandler coroutineHandler) : base(localizationSettings)
         {
-            _uniCornMonoBehaviour = uniCornMonoBehaviour;
+            _coroutineHandler = coroutineHandler;
         }
 
         #region Initialization
@@ -46,7 +46,7 @@ namespace UniCorn.Localization
 
         private void LoadLanguageData(SystemLanguage language, Dictionary<string, string> mapToFill)
         {
-            _uniCornMonoBehaviour.StartCoroutine(LoadLanguageDataCoroutine(language, mapToFill));
+            _coroutineHandler.RunCoroutineFromUniCorn(LoadLanguageDataCoroutine(language, mapToFill));
         }
 
         private IEnumerator LoadLanguageDataCoroutine(SystemLanguage language, Dictionary<string, string> mapToFill)

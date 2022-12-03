@@ -18,7 +18,7 @@ namespace UniCorn.Zenject
             Container.BindInterfacesAndSelfTo<NavigationService>().AsSingle();
             Container.BindInterfacesAndSelfTo<TranslationService>().AsSingle();
 
-            Container.Bind<UniCornMonoBehaviour>().FromNewComponentOnNewGameObject().AsSingle();
+            Container.BindInterfacesAndSelfTo<UniCornMonoBehaviour>().FromNewComponentOnNewGameObject().AsSingle();
         }
     }
 }

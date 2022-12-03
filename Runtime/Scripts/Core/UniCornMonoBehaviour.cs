@@ -1,10 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
+
+[assembly: InternalsVisibleTo("UniCorn.Zenject")]
 
 namespace UniCorn.Core
 {
-    public class UniCornMonoBehaviour : MonoBehaviour
+    internal class UniCornMonoBehaviour : MonoBehaviour, ICoroutineHandler
     {
         private readonly Dictionary<ulong, Coroutine> _pendingCoroutines = new();
 
@@ -19,17 +22,17 @@ namespace UniCorn.Core
 
         public bool CancelCoroutine(CoroutineCancellationToken cancellationToken)
         {
-            if (_pendingCoroutines.TryGetValue(cancellationToken.CoroutineId, out Coroutine coroutineToCancel))
+            if (!_pendingCoroutines.TryGetValue(cancellationToken.CoroutineId, out Coroutine coroutineToCancel))
             {
-                StopCoroutine(coroutineToCancel);
-                _pendingCoroutines.Remove(cancellationToken.CoroutineId);
-                return true;
+                return false;
             }
 
-            return false;
+            StopCoroutine(coroutineToCancel);
+            _pendingCoroutines.Remove(cancellationToken.CoroutineId);
+            return true;
         }
 
-        public IEnumerator InternalCoroutine(IEnumerator coroutineToRun, CoroutineCancellationToken cancellationToken)
+        private IEnumerator InternalCoroutine(IEnumerator coroutineToRun, CoroutineCancellationToken cancellationToken)
         {
             yield return coroutineToRun;
             _pendingCoroutines.Remove(cancellationToken.CoroutineId);
