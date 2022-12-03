@@ -2,9 +2,9 @@
 {
     public class CoroutineCancellationToken
     {
-        public uint CoroutineId { get; }
+        public ulong CoroutineId { get; }
 
-        public CoroutineCancellationToken(uint coroutineId)
+        public CoroutineCancellationToken(ulong coroutineId)
         {
             CoroutineId = coroutineId;
         }

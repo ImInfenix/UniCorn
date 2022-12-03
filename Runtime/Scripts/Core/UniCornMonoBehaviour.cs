@@ -1,20 +1,18 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using UnityEngine;
 
 namespace UniCorn.Core
 {
     public class UniCornMonoBehaviour : MonoBehaviour
     {
-        private readonly Dictionary<uint, Coroutine> _pendingCoroutines = new();
+        private readonly Dictionary<ulong, Coroutine> _pendingCoroutines = new();
 
-        private uint _requestCount;
-        
+        private ulong _requestCount;
+
         public CoroutineCancellationToken RunCoroutineFromUniCorn(IEnumerator enumerator)
         {
-            CoroutineCancellationToken cancellationToken = new CoroutineCancellationToken(_requestCount);
-            _requestCount++;
+            CoroutineCancellationToken cancellationToken = new CoroutineCancellationToken(_requestCount++);
             _pendingCoroutines.Add(cancellationToken.CoroutineId, StartCoroutine(InternalCoroutine(enumerator, cancellationToken)));
             return cancellationToken;
         }
