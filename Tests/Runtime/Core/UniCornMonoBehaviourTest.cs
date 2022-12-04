@@ -6,7 +6,8 @@ using Zenject;
 
 namespace UniCorn.Tests.Runtime.Core
 {
-    public class UniCornMonoBehaviourTest : ZenjectIntegrationTestFixture
+    [TestFixture]
+    public class UniCornMonoBehaviourTest : ZenjectUnitTestFixture
     {
         const int ITERATIONS_COUNT = 5;
 
@@ -19,13 +20,8 @@ namespace UniCorn.Tests.Runtime.Core
         {
             _counter = 0;
 
-            InstallContext();
-        }
-
-        private void InstallContext()
-        {
-            PreInstall();
-            PostInstall();
+            Container.BindInterfacesAndSelfTo<UniCornMonoBehaviour>().FromNewComponentOnNewGameObject().AsSingle();
+            Container.Inject(this);
         }
 
         [UnityTest]

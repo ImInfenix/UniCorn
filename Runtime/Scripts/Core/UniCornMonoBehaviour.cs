@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-[assembly: InternalsVisibleTo("UniCorn.Zenject")]
+[assembly: InternalsVisibleTo("UniCorn.Zenject"), InternalsVisibleTo("UniCorn.Tests")]
 
 namespace UniCorn.Core
 {
