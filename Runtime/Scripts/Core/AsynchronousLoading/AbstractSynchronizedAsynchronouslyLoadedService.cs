@@ -1,6 +1,6 @@
 ﻿namespace UniCorn.Core.AsynchronousLoading
 {
-    public class AbstractSynchronizedAsynchronouslyLoadedService : AbstractAsynchronouslyLoadedService
+    public abstract class AbstractSynchronizedAsynchronouslyLoadedService : AbstractAsynchronouslyLoadedService
     {
         private readonly AbstractAsynchronouslyLoadedServiceSynchronizer _synchronizer;
 
@@ -9,18 +9,21 @@
             _synchronizer = synchronizer;
         }
 
-        public override void Initialize()
+        public sealed override void Initialize()
         {
-            base.Initialize();
-
             _synchronizer.RegisterAsynchronousLoadedService(this);
+            InitializeInternal();
         }
 
-        public override void Dispose()
+        protected abstract void InitializeInternal();
+
+        public sealed override void Dispose()
         {
-            base.Dispose();
-
+            DisposeInternal();
             _synchronizer.UnregisterAsynchronousLoadedService(this);
+            base.Dispose();
         }
+
+        protected abstract void DisposeInternal();
     }
 }

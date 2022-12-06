@@ -30,8 +30,6 @@ namespace UniCorn.Input
 
         public override void Initialize()
         {
-            base.Initialize();
-
             foreach (InputAction inputAction in _inputActionCollection)
             {
                 inputAction.started += OnInputAction;
@@ -46,8 +44,6 @@ namespace UniCorn.Input
 
         public override void Dispose()
         {
-            base.Initialize();
-
             foreach (InputAction inputAction in _inputActionCollection)
             {
                 inputAction.performed -= OnInputAction;

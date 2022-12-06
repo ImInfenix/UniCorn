@@ -12,14 +12,11 @@ namespace UniCorn.Core.AsynchronousLoading
     {
         private readonly List<AsyncOperationHandle> _asyncOperationHandles = new();
 
-        private bool _isLoadingDone;
         public event Action OnLoadingDone;
 
-        public bool IsLoadingDone => _isLoadingDone;
+        public bool IsLoadingDone { get; private set; }
 
-        public virtual void Initialize()
-        {
-        }
+        public abstract void Initialize();
 
         public virtual void Dispose()
         {
@@ -46,7 +43,7 @@ namespace UniCorn.Core.AsynchronousLoading
             RegisterAsynchronousOperation(loadAssetsOperation);
         }
 
-        protected void RegisterAsynchronousOperation(AsyncOperationHandle operationHandle)
+        private void RegisterAsynchronousOperation(AsyncOperationHandle operationHandle)
         {
             operationHandle.Completed += OnAsyncOperationHandleCompleted;
 
@@ -72,7 +69,7 @@ namespace UniCorn.Core.AsynchronousLoading
             OnAsyncOperationsCompleted();
         }
 
-        protected virtual void OnAsyncOperationsCompleted()
+        private void OnAsyncOperationsCompleted()
         {
             foreach (AsyncOperationHandle operationHandle in _asyncOperationHandles)
             {
@@ -82,7 +79,7 @@ namespace UniCorn.Core.AsynchronousLoading
                 }
             }
 
-            _isLoadingDone = true;
+            IsLoadingDone = true;
             OnLoadingDone?.Invoke();
             OnLoadingDone = null;
         }
