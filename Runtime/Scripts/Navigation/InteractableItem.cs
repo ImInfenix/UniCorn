@@ -10,116 +10,116 @@ using Zenject;
 
 namespace UniCorn.Navigation
 {
-    [RequireComponent(typeof(Selectable))]
-    public class InteractableItem : MonoBehaviour
-    {
-        [SerializeField] private InputDefinition[] _inputDefinitions;
+	[RequireComponent(typeof(Selectable))]
+	public class InteractableItem : MonoBehaviour
+	{
+		[SerializeField] private InputDefinition[] _inputDefinitions;
 
-        private InputService _inputService;
-        private NavigationService _navigationService;
+		private InputService _inputService;
+		private NavigationService _navigationService;
 
-        public Action onItemPressed;
-        public Action onItemReleased;
+		public Action onItemPressed;
+		public Action onItemReleased;
 
-        private AbstractLayout _parentLayout;
-        private Selectable _selectable;
+		private AbstractLayout _parentLayout;
+		private Selectable _selectable;
 
-        public IEnumerable<InputDefinition> InputDefinitions => _inputDefinitions;
-        
-        public Selectable Selectable
-        {
-            get
-            {
-                if (_selectable == null)
-                {
-                    _selectable = GetComponent<Selectable>();
-                }
+		public IEnumerable<InputDefinition> InputDefinitions => _inputDefinitions;
 
-                return _selectable;
-            }
-        }
+		public Selectable Selectable
+		{
+			get
+			{
+				if (_selectable == null)
+				{
+					_selectable = GetComponent<Selectable>();
+				}
+
+				return _selectable;
+			}
+		}
 
 #if UNICORN_FOR_ZENJECT
-        [Inject]
+		[Inject]
 #endif
-        public void InitializeDependencies(InputService inputService, NavigationService navigationService)
-        {
-            _inputService = inputService;
-            _navigationService = navigationService;
-        }
+		public void InitializeDependencies(InputService inputService, NavigationService navigationService)
+		{
+			_inputService = inputService;
+			_navigationService = navigationService;
+		}
 
-        private void Awake()
-        {
-            _parentLayout = GetComponentInParent<AbstractLayout>();
-        }
+		private void Start()
+		{
+			_parentLayout = GetComponentInParent<AbstractLayout>();
+		}
 
-        private void OnEnable()
-        {
-            switch (Selectable)
-            {
-                case Button button:
-                    button.onClick.AddListener(OnItemReleased);
-                    break;
-                case Toggle toggle:
-                    toggle.onValueChanged.AddListener(OnToggleValueChanged);
-                    break;
-            }
-            
-            Register();
-        }
+		private void OnEnable()
+		{
+			switch (Selectable)
+			{
+				case Button button:
+					button.onClick.AddListener(OnItemReleased);
+					break;
+				case Toggle toggle:
+					toggle.onValueChanged.AddListener(OnToggleValueChanged);
+					break;
+			}
 
-        private void OnDisable()
-        {
-            switch (Selectable)
-            {
-                case Button button:
-                    button.onClick.RemoveListener(OnItemReleased);
-                    break;
-                case Toggle toggle:
-                    toggle.onValueChanged.RemoveListener(OnToggleValueChanged);
-                    break;
-            }
-            
-            Unregister();
-        }
+			Register();
+		}
 
-        private void Register()
-        {
-            _navigationService.Register(this, _parentLayout);
-        }
+		private void OnDisable()
+		{
+			switch (Selectable)
+			{
+				case Button button:
+					button.onClick.RemoveListener(OnItemReleased);
+					break;
+				case Toggle toggle:
+					toggle.onValueChanged.RemoveListener(OnToggleValueChanged);
+					break;
+			}
 
-        private void Unregister()
-        {
-            _navigationService.Unregister(this, _parentLayout);
-        }
+			Unregister();
+		}
 
-        public bool DoesListenToInputDefinition(InputDefinition inputDefinition)
-        {
-            foreach (InputDefinition listenedInputDefinition in InputDefinitions)
-            {
-                if (listenedInputDefinition == inputDefinition)
-                {
-                    return true;
-                }
-            }
+		private void Register()
+		{
+			_navigationService.Register(this, _parentLayout);
+		}
 
-            return false;
-        }
+		private void Unregister()
+		{
+			_navigationService.Unregister(this, _parentLayout);
+		}
 
-        public void OnItemPressed() 
-        {
-            onItemPressed?.Invoke();
-        }
+		public bool DoesListenToInputDefinition(InputDefinition inputDefinition)
+		{
+			foreach (InputDefinition listenedInputDefinition in InputDefinitions)
+			{
+				if (listenedInputDefinition == inputDefinition)
+				{
+					return true;
+				}
+			}
 
-        public void OnItemReleased()
-        {
-            onItemReleased?.Invoke();
-        }
+			return false;
+		}
 
-        private void OnToggleValueChanged(bool isToggled)
-        {
-            OnItemPressed();
-            OnItemReleased();
-        }
-    }
+		public void OnItemPressed()
+		{
+			onItemPressed?.Invoke();
+		}
+
+		public void OnItemReleased()
+		{
+			onItemReleased?.Invoke();
+		}
+
+		private void OnToggleValueChanged(bool isToggled)
+		{
+			OnItemPressed();
+			OnItemReleased();
+		}
+	}
 }
