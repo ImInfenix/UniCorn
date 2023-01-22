@@ -72,7 +72,7 @@ namespace UniCorn.Logging
 
                 foreach (string logEntry in serviceData.Service.GetLogContent())
                 {
-                    GUILayout.Label($"\t{logEntry}", logEntryStyle);
+                    GUILayout.Label($"{logEntry}", logEntryStyle);
                 }
             }
         }
