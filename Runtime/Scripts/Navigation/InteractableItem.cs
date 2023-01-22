@@ -13,16 +13,16 @@ namespace UniCorn.Navigation
 	[RequireComponent(typeof(Selectable))]
 	public class InteractableItem : MonoBehaviour
 	{
+		[SerializeField] private AbstractLayout _parentLayout;
 		[SerializeField] private InputDefinition[] _inputDefinitions;
 
-		private InputService _inputService;
 		private NavigationService _navigationService;
 
 		public Action onItemPressed;
 		public Action onItemReleased;
 
-		private AbstractLayout _parentLayout;
 		private Selectable _selectable;
+		private InitializationStatus _initializationStatus;
 
 		public IEnumerable<InputDefinition> InputDefinitions => _inputDefinitions;
 
@@ -44,13 +44,12 @@ namespace UniCorn.Navigation
 #endif
 		public void InitializeDependencies(InputService inputService, NavigationService navigationService)
 		{
-			_inputService = inputService;
 			_navigationService = navigationService;
 		}
 
 		private void Start()
 		{
-			_parentLayout = GetComponentInParent<AbstractLayout>();
+			AttemptToInitialize(InitializationStatus.Started);
 		}
 
 		private void OnEnable()
@@ -65,7 +64,7 @@ namespace UniCorn.Navigation
 					break;
 			}
 
-			Register();
+			AttemptToInitialize(InitializationStatus.EnabledOnce);
 		}
 
 		private void OnDisable()
@@ -81,6 +80,27 @@ namespace UniCorn.Navigation
 			}
 
 			Unregister();
+		}
+
+		private void AttemptToInitialize(InitializationStatus newStatus)
+		{
+			const InitializationStatus requiredInitializationStatus = InitializationStatus.Started | InitializationStatus.EnabledOnce;
+			_initializationStatus |= newStatus;
+
+			if (_initializationStatus != requiredInitializationStatus)
+			{
+				return;
+			}
+
+			if (_parentLayout == null)
+			{
+				_parentLayout = GetComponentInParent<AbstractLayout>();
+			}
+
+			if (gameObject.activeInHierarchy)
+			{
+				Register();
+			}
 		}
 
 		private void Register()
@@ -121,5 +141,12 @@ namespace UniCorn.Navigation
 			OnItemPressed();
 			OnItemReleased();
 		}
+
+#if UNITY_EDITOR
+		private void OnValidate()
+		{
+			_parentLayout = GetComponentInParent<AbstractLayout>();
+		}
+#endif
 	}
 }
