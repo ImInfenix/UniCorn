@@ -64,9 +64,15 @@ namespace UniCorn.Navigation
 
 		private bool OnInputActionInternal(InputAction.CallbackContext callbackContext, InputDefinition inputDefinition, out Action actionToExecute)
 		{
+			return OnInputActionInternal(callbackContext, inputDefinition, out actionToExecute, _layersList.Count - 1);
+		}
+
+		private bool OnInputActionInternal(InputAction.CallbackContext callbackContext, InputDefinition inputDefinition, out Action actionToExecute, int layerIndex)
+		{
 			actionToExecute = null;
 
-			foreach (InteractableItem interactableItem in _layersList.GetLastOrDefault().RegisteredItems)
+			NavigationLayer navigationLayer = _layersList[layerIndex];
+			foreach (InteractableItem interactableItem in navigationLayer.RegisteredItems )
 			{
 				if (!interactableItem.DoesListenToInputDefinition(inputDefinition))
 				{
@@ -93,6 +99,11 @@ namespace UniCorn.Navigation
 				{
 					return true;
 				}
+			}
+
+			if (layerIndex > 0 && navigationLayer.AssociatedLayout.DoesForwardInputsToLowerLayers)
+			{
+				return OnInputActionInternal(callbackContext, inputDefinition, out actionToExecute, layerIndex - 1);
 			}
 
 			return false;
