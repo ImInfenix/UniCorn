@@ -4,7 +4,7 @@ using UniCorn.Core;
 using UnityEngine.TestTools;
 using Zenject;
 
-namespace UniCorn.Tests.Runtime.Core
+namespace UniCorn.Tests.Core
 {
     [TestFixture]
     public class UniCornMonoBehaviourTest : ZenjectUnitTestFixture

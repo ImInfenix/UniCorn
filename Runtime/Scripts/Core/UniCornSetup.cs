@@ -1,7 +1,6 @@
-﻿using UniCorn.Input;
-using UnityEngine;
+﻿using UnityEngine;
 
-namespace UniCorn.Standalone
+namespace UniCorn.Core
 {
     public class UniCornSetup : MonoBehaviour
     {
