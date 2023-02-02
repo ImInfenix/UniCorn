@@ -8,7 +8,7 @@ namespace UniCorn.Structures
         private readonly Vector3 _cellSize;
         private readonly int _batchSize;
 
-        private Dictionary<Vector3Int, T[,,]> _batchesMap;
+        private readonly Dictionary<Vector3Int, T[,,]> _batchesMap;
 
         public Vector3 CellSize => _cellSize;
         public int BatchSize => _batchSize;
