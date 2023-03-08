@@ -13,8 +13,15 @@ namespace UniCorn.Navigation
 	[RequireComponent(typeof(Selectable))]
 	public class InteractableItem : MonoBehaviour
 	{
+		public static readonly InteractableItemInitializationComparer REGISTER_COMPARER = new();
+		public static readonly InteractableItemInitializationReversedComparer UNREGISTER_COMPARER = new();
+
 		[SerializeField] private AbstractLayout _parentLayout;
 		[SerializeField] private InputDefinition[] _inputDefinitions;
+
+		[Tooltip("Defines in which order interactable items are (un)registered on the same frame. Lowest is earliest.")]
+		[SerializeField]
+		private int _initializationPriority;
 
 		private NavigationService _navigationService;
 
@@ -25,6 +32,7 @@ namespace UniCorn.Navigation
 		private InitializationStatus _initializationStatus;
 
 		public IEnumerable<InputDefinition> InputDefinitions => _inputDefinitions;
+		public AbstractLayout ParentLayout => _parentLayout;
 
 		public Selectable Selectable
 		{
@@ -84,7 +92,8 @@ namespace UniCorn.Navigation
 
 		private void AttemptToInitialize(InitializationStatus newStatus)
 		{
-			const InitializationStatus requiredInitializationStatus = InitializationStatus.Started | InitializationStatus.EnabledOnce;
+			const InitializationStatus requiredInitializationStatus =
+				InitializationStatus.Started | InitializationStatus.EnabledOnce;
 			_initializationStatus |= newStatus;
 
 			if (_initializationStatus != requiredInitializationStatus)
@@ -105,12 +114,12 @@ namespace UniCorn.Navigation
 
 		private void Register()
 		{
-			_navigationService.Register(this, _parentLayout);
+			_navigationService.Register(this);
 		}
 
 		private void Unregister()
 		{
-			_navigationService.Unregister(this, _parentLayout);
+			_navigationService.Unregister(this);
 		}
 
 		public bool DoesListenToInputDefinition(InputDefinition inputDefinition)
@@ -148,5 +157,31 @@ namespace UniCorn.Navigation
 			_parentLayout = GetComponentInParent<AbstractLayout>();
 		}
 #endif
+
+		public class InteractableItemInitializationComparer : IComparer<InteractableItem>
+		{
+			public virtual int Compare(InteractableItem first, InteractableItem second)
+			{
+				if (first is null)
+				{
+					if (second is null)
+					{
+						return 0;
+					}
+
+					return -1;
+				}
+
+				return second is null ? 1 : first._initializationPriority.CompareTo(second._initializationPriority);
+			}
+		}
+
+		public class InteractableItemInitializationReversedComparer : InteractableItemInitializationComparer
+		{
+			public override int Compare(InteractableItem first, InteractableItem second)
+			{
+				return base.Compare(second, first);
+			}
+		}
 	}
 }

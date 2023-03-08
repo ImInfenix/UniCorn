@@ -5,13 +5,16 @@ using UniCorn.Input;
 using UniCorn.Logging;
 using UniCorn.Utils;
 using UnityEngine.InputSystem;
+using Zenject;
 
 namespace UniCorn.Navigation
 {
-	public partial class NavigationService : ILoggedService
+	public partial class NavigationService : ITickable, ILoggedService
 	{
 		private readonly Dictionary<string, InputDefinition> _registeredInputDefinitions = new();
 		private readonly List<NavigationLayer> _layersList = new();
+		private readonly List<InteractableItem> _interactableItemsToRegister = new();
+		private readonly List<InteractableItem> _interactableItemsToUnregister = new();
 
 		public void Initialize()
 		{
@@ -21,8 +24,38 @@ namespace UniCorn.Navigation
 		{
 		}
 
-		public void Register(InteractableItem itemToRegister, AbstractLayout layoutToRegisterOn)
+		public void Tick()
 		{
+			_interactableItemsToRegister.Sort(InteractableItem.REGISTER_COMPARER);
+			foreach (InteractableItem interactableItem in _interactableItemsToRegister)
+			{
+				RegisterInternal(interactableItem);
+			}
+
+			_interactableItemsToRegister.Clear();
+
+			_interactableItemsToRegister.Sort(InteractableItem.UNREGISTER_COMPARER);
+			foreach (InteractableItem interactableItem in _interactableItemsToUnregister)
+			{
+				UnregisterInternal(interactableItem);
+			}
+
+			_interactableItemsToUnregister.Clear();
+		}
+
+		public void Register(InteractableItem interactableItem)
+		{
+			_interactableItemsToRegister.Add(interactableItem);
+		}
+
+		public void Unregister(InteractableItem interactableItem)
+		{
+			_interactableItemsToUnregister.Add(interactableItem);
+		}
+
+		private void RegisterInternal(InteractableItem itemToRegister)
+		{
+			AbstractLayout layoutToRegisterOn = itemToRegister.ParentLayout;
 			AddLayerIfDoesntExist(layoutToRegisterOn);
 
 			NavigationLayer layerToRegisterOn = GetLayer(layoutToRegisterOn);
@@ -34,18 +67,19 @@ namespace UniCorn.Navigation
 			}
 		}
 
-		public void Unregister(InteractableItem itemToRegister, AbstractLayout layoutToUnregisterFrom)
+		private void UnregisterInternal(InteractableItem itemToRegister)
 		{
-			NavigationLayer layerToRegisterOn = GetLayer(layoutToUnregisterFrom);
+			AbstractLayout layoutToUnregisterFrom = itemToRegister.ParentLayout;
+			NavigationLayer layerToUnregisterFrom = GetLayer(itemToRegister.ParentLayout);
 
-			if (layerToRegisterOn == null)
+			if (layerToUnregisterFrom == null)
 			{
 				return;
 			}
 
-			layerToRegisterOn.Unregister(itemToRegister);
+			layerToUnregisterFrom.Unregister(itemToRegister);
 
-			if (layerToRegisterOn.RegisteredItems.Count == 0)
+			if (layerToUnregisterFrom.RegisteredItems.Count == 0)
 			{
 				RemoveLayerIfExists(layoutToUnregisterFrom);
 			}
@@ -62,17 +96,19 @@ namespace UniCorn.Navigation
 			return true;
 		}
 
-		private bool OnInputActionInternal(InputAction.CallbackContext callbackContext, InputDefinition inputDefinition, out Action actionToExecute)
+		private bool OnInputActionInternal(InputAction.CallbackContext callbackContext, InputDefinition inputDefinition,
+			out Action actionToExecute)
 		{
 			return OnInputActionInternal(callbackContext, inputDefinition, out actionToExecute, _layersList.Count - 1);
 		}
 
-		private bool OnInputActionInternal(InputAction.CallbackContext callbackContext, InputDefinition inputDefinition, out Action actionToExecute, int layerIndex)
+		private bool OnInputActionInternal(InputAction.CallbackContext callbackContext, InputDefinition inputDefinition,
+			out Action actionToExecute, int layerIndex)
 		{
 			actionToExecute = null;
 
 			NavigationLayer navigationLayer = _layersList[layerIndex];
-			foreach (InteractableItem interactableItem in navigationLayer.RegisteredItems )
+			foreach (InteractableItem interactableItem in navigationLayer.RegisteredItems)
 			{
 				if (!interactableItem.DoesListenToInputDefinition(inputDefinition))
 				{
