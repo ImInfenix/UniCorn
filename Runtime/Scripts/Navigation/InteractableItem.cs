@@ -154,7 +154,10 @@ namespace UniCorn.Navigation
 #if UNITY_EDITOR
 		private void OnValidate()
 		{
-			_parentLayout = GetComponentInParent<AbstractLayout>();
+			if (_parentLayout == null)
+			{
+				_parentLayout = GetComponentInParent<AbstractLayout>();
+			}
 		}
 #endif
 
