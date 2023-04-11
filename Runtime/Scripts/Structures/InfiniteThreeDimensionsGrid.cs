@@ -3,75 +3,79 @@ using UnityEngine;
 
 namespace UniCorn.Structures
 {
-    public class InfiniteThreeDimensionsGrid<T> where T : class
-    {
-        private readonly Vector3 _cellSize;
-        private readonly int _batchSize;
+	public class InfiniteThreeDimensionsGrid<T> where T : class
+	{
+		private readonly Vector3 _cellSize;
+		private readonly int _batchSize;
+		private readonly Vector3Int _batchCoordinateMappingOffset;
 
-        private readonly Dictionary<Vector3Int, T[,,]> _batchesMap;
+		private readonly Dictionary<Vector3Int, T[,,]> _batchesMap;
 
-        public Vector3 CellSize => _cellSize;
-        public int BatchSize => _batchSize;
+		public Vector3 CellSize => _cellSize;
+		public int BatchSize => _batchSize;
 
-        public InfiniteThreeDimensionsGrid(Vector3 cellSize, int batchSize = 16)
-        {
-            _cellSize = cellSize;
-            _batchSize = batchSize;
-            _batchesMap = new Dictionary<Vector3Int, T[,,]>();
-        }
+		public InfiniteThreeDimensionsGrid(Vector3 cellSize, int batchSize = 16)
+		{
+			_cellSize = cellSize;
+			_batchSize = batchSize;
+			_batchesMap = new Dictionary<Vector3Int, T[,,]>();
 
-        public T Get(Vector3Int position)
-        {
-            if (!_batchesMap.TryGetValue(GetBatchCoordinates(position), out T[,,] batch))
-            {
-                return null;
-            }
+			_batchCoordinateMappingOffset = Vector3Int.one * (_batchSize - 1);
+		}
 
-            Vector3Int positionInBatch = GetPositionInBatch(position);
+		public T Get(Vector3Int position)
+		{
+			if (!_batchesMap.TryGetValue(GetBatchCoordinates(position), out T[,,] batch))
+			{
+				return null;
+			}
 
-            return batch[positionInBatch.x % _batchSize, positionInBatch.y % _batchSize, positionInBatch.z % _batchSize];
-        }
+			Vector3Int positionInBatch = GetPositionInBatch(position);
 
-        public Vector3 GetPositionInWorld(Vector3Int positionInTheGrid)
-        {
-            return new Vector3(positionInTheGrid.x * _cellSize.x, positionInTheGrid.x * _cellSize.y, positionInTheGrid.x * _cellSize.z);
-        }
+			return batch[positionInBatch.x % _batchSize, positionInBatch.y % _batchSize, positionInBatch.z % _batchSize];
+		}
 
-        public void Set(T value, Vector3Int position)
-        {
-            Vector3Int batchCoordinates = GetBatchCoordinates(position);
+		public Vector3 GetPositionInWorld(Vector3Int positionInTheGrid)
+		{
+			return new Vector3(positionInTheGrid.x * _cellSize.x, positionInTheGrid.x * _cellSize.y, positionInTheGrid.x * _cellSize.z);
+		}
 
-            if (!_batchesMap.TryGetValue(batchCoordinates, out T[,,] batch))
-            {
-                batch = new T[_batchSize, _batchSize, _batchSize];
-                _batchesMap[batchCoordinates] = batch;
-            }
+		public void Set(T value, Vector3Int position)
+		{
+			Vector3Int batchCoordinates = GetBatchCoordinates(position);
 
-            Vector3Int positionInBatch = GetPositionInBatch(position);
+			if (!_batchesMap.TryGetValue(batchCoordinates, out T[,,] batch))
+			{
+				batch = new T[_batchSize, _batchSize, _batchSize];
+				_batchesMap[batchCoordinates] = batch;
+			}
 
-            batch[positionInBatch.x, positionInBatch.y, positionInBatch.z] = value;
-        }
+			Vector3Int positionInBatch = GetPositionInBatch(position);
 
-        public Vector3Int GetPositionInBatch(Vector3Int positionInGrid)
-        {
-            int GetPositionInBatchSingleAxis(int position)
-            {
-                int result = position % _batchSize;
+			batch[positionInBatch.x, positionInBatch.y, positionInBatch.z] = value;
+		}
 
-                if (result < 0)
-                {
-                    result += _batchSize;
-                }
+		public Vector3Int GetPositionInBatch(Vector3Int positionInGrid)
+		{
+			int GetPositionInBatchSingleAxis(int position)
+			{
+				int result = position % _batchSize;
 
-                return result;
-            }
+				if (result < 0)
+				{
+					result += _batchSize;
+				}
 
-            return new Vector3Int(GetPositionInBatchSingleAxis(positionInGrid.x), GetPositionInBatchSingleAxis(positionInGrid.y), GetPositionInBatchSingleAxis(positionInGrid.z));
-        }
+				return result;
+			}
 
-        public Vector3Int GetBatchCoordinates(Vector3Int positionInTheGrid)
-        {
-            return positionInTheGrid / _batchSize;
-        }
-    }
+			return new Vector3Int(GetPositionInBatchSingleAxis(positionInGrid.x), GetPositionInBatchSingleAxis(positionInGrid.y),
+				GetPositionInBatchSingleAxis(positionInGrid.z));
+		}
+
+		public Vector3Int GetBatchCoordinates(Vector3Int positionInTheGrid)
+		{
+			return (positionInTheGrid - _batchCoordinateMappingOffset) / _batchSize;
+		}
+	}
 }
