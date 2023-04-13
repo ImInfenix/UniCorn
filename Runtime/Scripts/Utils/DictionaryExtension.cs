@@ -24,5 +24,11 @@ namespace UniCorn.Utils
 			dictionary.Remove(key);
 			return true;
 		}
+
+		public static V GetAndAddIfDoesntExist<K, V>(this Dictionary<K, V> dictionary, K key)
+		{
+			dictionary.AddIfDoesntExist(key, default);
+			return dictionary[key];
+		}
 	}
 }
