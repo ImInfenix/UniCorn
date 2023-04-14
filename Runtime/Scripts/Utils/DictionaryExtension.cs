@@ -14,7 +14,7 @@ namespace UniCorn.Utils
 			dictionary.Add(key, value);
 		}
 
-		public static bool RemoveAndRetrieveIfExist<K, V>(this Dictionary<K, V> dictionary, K key, out V value)
+		public static bool RemoveAndRetrieveIfExists<K, V>(this Dictionary<K, V> dictionary, K key, out V value)
 		{
 			if (!dictionary.TryGetValue(key, out value))
 			{
