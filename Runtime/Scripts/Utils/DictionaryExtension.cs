@@ -25,9 +25,9 @@ namespace UniCorn.Utils
 			return true;
 		}
 
-		public static V GetAndAddIfDoesntExist<K, V>(this Dictionary<K, V> dictionary, K key)
+		public static V GetAndAddIfDoesntExist<K, V>(this Dictionary<K, V> dictionary, K key) where V : new()
 		{
-			dictionary.AddIfDoesntExist(key, default);
+			dictionary.AddIfDoesntExist(key, new V());
 			return dictionary[key];
 		}
 	}

@@ -53,6 +53,18 @@ namespace UniCorn.Tests.Utils
 		}
 
 		[Test]
+		public void GetAndAddIfDoesntExistNonPrimitive()
+		{
+			Dictionary<int, List<int>> dictionary = new();
+			Assert.IsTrue(dictionary.Count == 0);
+			var newObject = dictionary.GetAndAddIfDoesntExist(0);
+			Assert.IsTrue(newObject != null);
+			Assert.IsTrue(newObject.IsEmpty());
+			Assert.IsTrue(dictionary.Count == 1);
+			Assert.IsNotNull(dictionary[0]);
+		}
+
+		[Test]
 		public void GetAndAddIfDoesntExistAlreadyExisting()
 		{
 			Dictionary<int, int> dictionary = new() { { 0, 5 } };
