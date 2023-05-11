@@ -5,7 +5,7 @@ namespace UniCorn.Utils
 {
     public static class ListExtension
     {
-        public static bool IsEmpty<T>(this List<T> list)
+        public static bool IsEmpty<T>(this IReadOnlyCollection<T> list)
         {
             return list.Count == 0;
         }
