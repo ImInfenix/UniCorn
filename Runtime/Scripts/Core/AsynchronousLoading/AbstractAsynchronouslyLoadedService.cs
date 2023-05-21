@@ -8,80 +8,80 @@ using UnityEngine.ResourceManagement.ResourceLocations;
 
 namespace UniCorn.Core.AsynchronousLoading
 {
-    public abstract class AbstractAsynchronouslyLoadedService : IService
-    {
-        private readonly List<AsyncOperationHandle> _asyncOperationHandles = new();
+	public abstract class AbstractAsynchronouslyLoadedService : IService
+	{
+		private readonly List<AsyncOperationHandle> _asyncOperationHandles = new();
 
-        public event Action OnLoadingDone;
+		public event Action OnLoadingDone;
 
-        public bool IsLoadingDone { get; private set; }
+		public bool IsLoadingDone { get; private set; }
 
-        public abstract void Initialize();
+		public abstract void Initialize();
 
-        public virtual void Dispose()
-        {
-            foreach (AsyncOperationHandle operationHandle in _asyncOperationHandles)
-            {
-                if (operationHandle.IsValid())
-                {
-                    Addressables.Release(operationHandle);
-                }
-            }
-        }
+		public virtual void Dispose()
+		{
+			foreach (AsyncOperationHandle operationHandle in _asyncOperationHandles)
+			{
+				if (operationHandle.IsValid())
+				{
+					Addressables.Release(operationHandle);
+				}
+			}
+		}
 
-        protected void LoadAssetsAsync<T>(string key, Action<AsyncOperationHandle<IList<T>>> onAssetsLoaded)
-        {
-            if (!AddressablesUtils.TryGetResourceLocation(key, typeof(T), out IList<IResourceLocation> resourceLocation))
-            {
-                return;
-            }
+		protected void LoadAssetsAsync<T>(string key, Action<AsyncOperationHandle<IList<T>>> onAssetsLoaded)
+		{
+			if (!AddressablesUtils.TryGetResourceLocation(key, typeof(T), out IList<IResourceLocation> resourceLocation))
+			{
+				return;
+			}
 
-            AsyncOperationHandle<IList<T>> loadAssetsOperation = Addressables.LoadAssetsAsync<T>(resourceLocation, null);
-            
-            loadAssetsOperation.OnComplete(onAssetsLoaded);
+			AsyncOperationHandle<IList<T>> loadAssetsOperation = Addressables.LoadAssetsAsync<T>(resourceLocation, null);
 
-            RegisterAsynchronousOperation(loadAssetsOperation);
-        }
+			loadAssetsOperation.OnComplete(onAssetsLoaded);
 
-        private void RegisterAsynchronousOperation(AsyncOperationHandle operationHandle)
-        {
-            operationHandle.Completed += OnAsyncOperationHandleCompleted;
+			RegisterAsynchronousOperation(loadAssetsOperation);
+		}
 
-            _asyncOperationHandles.Add(operationHandle);
-        }
+		private void RegisterAsynchronousOperation(AsyncOperationHandle operationHandle)
+		{
+			operationHandle.Completed += OnAsyncOperationHandleCompleted;
 
-        private void OnAsyncOperationHandleCompleted(AsyncOperationHandle currentOperationHandle)
-        {
-            if (!currentOperationHandle.IsValid())
-            {
-                Debug.LogWarning($"The following async operation completed but is invalid: {currentOperationHandle}");
-                return;
-            }
+			_asyncOperationHandles.Add(operationHandle);
+		}
 
-            foreach (AsyncOperationHandle operationHandle in _asyncOperationHandles)
-            {
-                if (!operationHandle.IsDone || !operationHandle.IsValid())
-                {
-                    return;
-                }
-            }
+		private void OnAsyncOperationHandleCompleted(AsyncOperationHandle currentOperationHandle)
+		{
+			if (!currentOperationHandle.IsValid())
+			{
+				Debug.LogWarning($"The following async operation completed but is invalid: {currentOperationHandle}");
+				return;
+			}
 
-            OnAsyncOperationsCompleted();
-        }
+			foreach (AsyncOperationHandle operationHandle in _asyncOperationHandles)
+			{
+				if (!operationHandle.IsDone || !operationHandle.IsValid())
+				{
+					return;
+				}
+			}
 
-        private void OnAsyncOperationsCompleted()
-        {
-            foreach (AsyncOperationHandle operationHandle in _asyncOperationHandles)
-            {
-                if (!operationHandle.IsDone)
-                {
-                    return;
-                }
-            }
+			OnAsyncOperationsCompleted();
+		}
 
-            IsLoadingDone = true;
-            OnLoadingDone?.Invoke();
-            OnLoadingDone = null;
-        }
-    }
+		private void OnAsyncOperationsCompleted()
+		{
+			foreach (AsyncOperationHandle operationHandle in _asyncOperationHandles)
+			{
+				if (!operationHandle.IsDone)
+				{
+					return;
+				}
+			}
+
+			IsLoadingDone = true;
+			OnLoadingDone?.Invoke();
+			OnLoadingDone = null;
+		}
+	}
 }
