@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 
 namespace UniCorn.Structures
 {
@@ -16,6 +17,10 @@ namespace UniCorn.Structures
 
 		public InfiniteThreeDimensionsGrid(Vector3 cellSize, int batchSize = 16)
 		{
+			Assert.IsTrue(cellSize.x > 0, "Infinite Three Dimensions Grid cell size must be > 0 (x).");
+			Assert.IsTrue(cellSize.y > 0, "Infinite Three Dimensions Grid cell size must be > 0 (y).");
+			Assert.IsTrue(cellSize.z > 0, "Infinite Three Dimensions Grid cell size must be > 0 (z).");
+
 			_cellSize = cellSize;
 			_batchSize = batchSize;
 			_batchesMap = new Dictionary<Vector3Int, T[,,]>();
