@@ -27,8 +27,13 @@ namespace UniCorn.Utils
 
 		public static V GetAndAddIfDoesntExist<K, V>(this Dictionary<K, V> dictionary, K key) where V : new()
 		{
-			dictionary.AddIfDoesntExist(key, new V());
-			return dictionary[key];
+			if (!dictionary.TryGetValue(key, out V value))
+			{
+				value = new V();
+				dictionary[key] = value;
+			}
+
+			return value;
 		}
 	}
 }
