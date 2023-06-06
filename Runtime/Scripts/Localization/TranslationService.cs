@@ -13,96 +13,96 @@ using UnityEngine.ResourceManagement.ResourceLocations;
 
 namespace UniCorn.Localization
 {
-    public class TranslationService : AbstractLocalizationService
-    {
-        private readonly ICoroutineHandler _coroutineHandler;
+	public class TranslationService : AbstractLocalizationService
+	{
+		private readonly ICoroutineHandler _coroutineHandler;
 
-        private readonly Dictionary<string, string> _fallbackKeysMap = new();
-        private readonly Dictionary<string, string> _currentKeysMap = new();
+		private readonly Dictionary<string, string> _fallbackKeysMap = new();
+		private readonly Dictionary<string, string> _currentKeysMap = new();
 
-        public TranslationService(LocalizationSettings localizationSettings, ICoroutineHandler coroutineHandler) : base(localizationSettings)
-        {
-            _coroutineHandler = coroutineHandler;
-        }
+		public TranslationService(LocalizationSettings localizationSettings, ICoroutineHandler coroutineHandler) : base(localizationSettings)
+		{
+			_coroutineHandler = coroutineHandler;
+		}
 
-        #region Initialization
-        
-        public override void Initialize()
-        {
-            base.Initialize();
-            
-            LoadLanguageData(_fallbackLanguage, _fallbackKeysMap);
-        }
+		#region Initialization
 
-        public override void SwitchToLanguage(SystemLanguage newTargetedLanguage)
-        {
-            if (newTargetedLanguage == _fallbackLanguage)
-            {
-                _currentKeysMap.Clear();
-            }
-            
-            LoadLanguageData(newTargetedLanguage, _currentKeysMap);
-        }
+		public override void Initialize()
+		{
+			base.Initialize();
 
-        private void LoadLanguageData(SystemLanguage language, Dictionary<string, string> mapToFill)
-        {
-            _coroutineHandler.RunCoroutineFromUniCorn(LoadLanguageDataCoroutine(language, mapToFill));
-        }
+			LoadLanguageData(_fallbackLanguage, _fallbackKeysMap);
+		}
 
-        private IEnumerator LoadLanguageDataCoroutine(SystemLanguage language, Dictionary<string, string> mapToFill)
-        {
-            if (!AddressablesUtils.TryGetResourceLocation(language.GetUniCornAddressableKey(), typeof(TextAsset),
-                    out IList<IResourceLocation> resourceLocation))
-            {
-                yield break;
-            }
+		public override void SwitchToLanguage(SystemLanguage newTargetedLanguage)
+		{
+			if (newTargetedLanguage == _fallbackLanguage)
+			{
+				_currentKeysMap.Clear();
+			}
 
-            AsyncOperationHandle<IList<TextAsset>> loadTextsOperation = Addressables.LoadAssetsAsync<TextAsset>(resourceLocation, null);
+			LoadLanguageData(newTargetedLanguage, _currentKeysMap);
+		}
 
-            yield return loadTextsOperation;
+		private void LoadLanguageData(SystemLanguage language, Dictionary<string, string> mapToFill)
+		{
+			_coroutineHandler.RunCoroutineFromUniCorn(LoadLanguageDataCoroutine(language, mapToFill));
+		}
 
-            FillKeyMap(loadTextsOperation.Result, mapToFill);
+		private IEnumerator LoadLanguageDataCoroutine(SystemLanguage language, Dictionary<string, string> mapToFill)
+		{
+			if (!AddressablesUtils.TryGetResourceLocation(language.GetUniCornAddressableKey(), typeof(TextAsset),
+				    out IList<IResourceLocation> resourceLocation))
+			{
+				yield break;
+			}
 
-            Addressables.Release(loadTextsOperation);
-        }
+			AsyncOperationHandle<IList<TextAsset>> loadTextsOperation = Addressables.LoadAssetsAsync<TextAsset>(resourceLocation, null);
 
-        private void FillKeyMap(IEnumerable<TextAsset> result, Dictionary<string, string> mapToFill)
-        {
-            mapToFill.Clear();
-            
-            foreach (TextAsset textAsset in result)
-            {
-                CsvConfiguration csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
-                {
-                    Delimiter = ";",
-                    HasHeaderRecord = true
-                };
-                    
-                using StringReader stringReader = new StringReader(textAsset.text);
-                using CsvReader csvReader = new CsvReader(stringReader, csvConfiguration);
+			yield return loadTextsOperation;
 
-                foreach (Translation translation in csvReader.GetRecords<Translation>())
-                {
-                    mapToFill.Add(translation.Key, translation.Value);
-                }
-            }
-        }
-        
-        #endregion
+			FillKeyMap(loadTextsOperation.Result, mapToFill);
 
-        public string Localize(string localizationKey)
-        {
-            if (_currentKeysMap.TryGetValue(localizationKey, out string localizedValue))
-            {
-                return localizedValue;
-            }
+			Addressables.Release(loadTextsOperation);
+		}
 
-            if (_fallbackKeysMap.TryGetValue(localizationKey, out localizedValue))
-            {
-                return localizedValue;
-            }
+		private void FillKeyMap(IEnumerable<TextAsset> result, Dictionary<string, string> mapToFill)
+		{
+			mapToFill.Clear();
 
-            return localizationKey;
-        }
-    }
+			foreach (TextAsset textAsset in result)
+			{
+				CsvConfiguration csvConfiguration = new CsvConfiguration(CultureInfo.InvariantCulture)
+				{
+					Delimiter = ";",
+					HasHeaderRecord = true
+				};
+
+				using StringReader stringReader = new StringReader(textAsset.text);
+				using CsvReader csvReader = new CsvReader(stringReader, csvConfiguration);
+
+				foreach (Translation translation in csvReader.GetRecords<Translation>())
+				{
+					mapToFill.Add(translation.Key, translation.Value);
+				}
+			}
+		}
+
+		#endregion
+
+		public string Localize(string localizationKey)
+		{
+			if (_currentKeysMap.TryGetValue(localizationKey, out string localizedValue))
+			{
+				return localizedValue;
+			}
+
+			if (_fallbackKeysMap.TryGetValue(localizationKey, out localizedValue))
+			{
+				return localizedValue;
+			}
+
+			return localizationKey;
+		}
+	}
 }

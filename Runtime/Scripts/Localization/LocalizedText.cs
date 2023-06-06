@@ -1,41 +1,50 @@
-using System;
-using UnityEngine;
 using TMPro;
+using UnityEngine;
+#if UNICORN_FOR_ZENJECT
+using Zenject;
+#endif
 
 namespace UniCorn.Localization
 {
-    [RequireComponent(typeof(TMP_Text))]
-    public class LocalizedText : MonoBehaviour
-    {
-        [SerializeField] private string _localizationKey;
-        
-        private TranslationService _translationService;
-        
-        private TMP_Text _text;
+	[RequireComponent(typeof(TMP_Text))]
+	public class LocalizedText : MonoBehaviour
+	{
+		[SerializeField] private TMP_Text _localizedText;
+		[SerializeField] private string _localizationKey;
 
-        private void Awake()
-        {
-            _text = GetComponent<TMP_Text>();
-        }
+		private TranslationService _translationService;
+
+		private void Awake()
+		{
+			_localizedText = GetComponent<TMP_Text>();
+		}
 
 #if UNICORN_FOR_ZENJECT
-        [Zenject.Inject]
+		[Inject]
 #endif
-        public void InitializeDependencies(TranslationService translationService)
-        {
-            _translationService = translationService;
-        }
+		public void InitializeDependencies(TranslationService translationService)
+		{
+			_translationService = translationService;
+		}
 
-         private void OnEnable()
-         {
-             _text.text = _translationService.Localize(_localizationKey);
-         }
+		private void OnEnable()
+		{
+			_localizedText.text = _translationService.Localize(_localizationKey);
+		}
 
 #if UNITY_EDITOR
-         private void OnValidate()
-         {
-             GetComponent<TMP_Text>().text = _localizationKey;
-         }
- #endif
-    }
+		private void OnValidate()
+		{
+			if (_localizedText == null)
+			{
+				_localizedText = GetComponent<TMP_Text>();
+			}
+
+			if (_localizedText != null)
+			{
+				_localizedText.text = _localizationKey;
+			}
+		}
+#endif
+	}
 }
