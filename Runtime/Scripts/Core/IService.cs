@@ -1,5 +1,4 @@
 ﻿using System;
-
 #if UNICORN_FOR_ZENJECT
 using Zenject;
 #else
@@ -8,7 +7,14 @@ using UniCorn.Standalone;
 
 namespace UniCorn.Core
 {
-    public interface IService : IInitializable, IDisposable
-    {
-    }
+	public interface IService : IInitializable, IDisposable
+	{
+		void IInitializable.Initialize()
+		{
+		}
+
+		void IDisposable.Dispose()
+		{
+		}
+	}
 }
