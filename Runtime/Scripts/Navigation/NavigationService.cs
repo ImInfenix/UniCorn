@@ -5,7 +5,11 @@ using UniCorn.Input;
 using UniCorn.Logging;
 using UniCorn.Utils;
 using UnityEngine.InputSystem;
+#if UNICORN_FOR_ZENJECT
 using Zenject;
+#else
+using UniCorn.Standalone;
+#endif
 
 namespace UniCorn.Navigation
 {

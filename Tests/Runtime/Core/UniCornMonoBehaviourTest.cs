@@ -1,17 +1,30 @@
 ﻿using System.Collections;
 using NUnit.Framework;
 using UniCorn.Core;
+using UnityEngine;
 using UnityEngine.TestTools;
+#if UNICORN_FOR_ZENJECT
 using Zenject;
+#else
+using UniCorn.Standalone;
+#endif
 
 namespace UniCorn.Tests.Core
 {
+#if UNICORN_FOR_ZENJECT
     [TestFixture]
     public class UniCornMonoBehaviourTest : ZenjectUnitTestFixture
+#else
+    public class UniCornMonoBehaviourTest
+#endif
     {
         const int ITERATIONS_COUNT = 5;
 
+#if UNICORN_FOR_ZENJECT
         [Inject] private ICoroutineHandler _coroutineHandler;
+#else
+        private ICoroutineHandler _coroutineHandler;
+#endif
 
         private int _counter;
 
@@ -20,8 +33,12 @@ namespace UniCorn.Tests.Core
         {
             _counter = 0;
 
+#if UNICORN_FOR_ZENJECT
             Container.BindInterfacesAndSelfTo<UniCornMonoBehaviour>().FromNewComponentOnNewGameObject().AsSingle();
             Container.Inject(this);
+#else
+            _coroutineHandler = new GameObject().AddComponent<UniCornMonoBehaviour>();
+#endif
         }
 
         [UnityTest]
