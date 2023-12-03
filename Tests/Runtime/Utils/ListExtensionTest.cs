@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using UniCorn.Utils;
 
@@ -6,39 +7,76 @@ namespace UniCorn.Tests.Utils
 {
 	public class ListExtensionTest
 	{
+		private readonly List<int> _nullList = null;
+		private readonly List<int> _emptyList = new();
+		private readonly List<int> _oneItemList = new() {5};
+		private readonly List<int> _multipleItemList = new() {5, 2, 8};
+
+		[Test]
+		public void IsEmptyNullList()
+		{
+			Assert.Throws<NullReferenceException>(() => _nullList.IsEmpty());
+		}
+
 		[Test]
 		public void IsEmptyEmptyList()
 		{
-			List<int> list = new();
-			Assert.IsTrue(list.IsEmpty());
+			Assert.IsTrue(_emptyList.IsEmpty());
 		}
 
 		[Test]
 		public void IsEmptyNonEmptyList()
 		{
-			List<int> list = new() { 5 };
-			Assert.IsFalse(list.IsEmpty());
+			Assert.IsFalse(_oneItemList.IsEmpty());
+		}
+
+		[Test]
+		public void GetLastNullList()
+		{
+			Assert.Throws<NullReferenceException>(() => _nullList.GetLast());
+		}
+
+		[Test]
+		public void GetLastEmptyList()
+		{
+			List<int> list = new();
+			Assert.Throws<ArgumentOutOfRangeException>(() => _emptyList.GetLast());
+		}
+
+		[Test]
+		public void GetLastOneItemList()
+		{
+			Assert.AreEqual(5, _oneItemList.GetLast());
+		}
+
+		[Test]
+		public void GetLastMultipleItemsList()
+		{
+			Assert.AreEqual(8, _multipleItemList.GetLast());
+		}
+
+		[Test]
+		public void GetLastOrDefaultNullList()
+		{
+			Assert.Throws<NullReferenceException>(() => _nullList.GetLastOrDefault());
 		}
 
 		[Test]
 		public void GetLastOrDefaultEmptyList()
 		{
-			List<int> list = new();
-			Assert.AreEqual(0, list.GetLastOrDefault());
+			Assert.AreEqual(0, _emptyList.GetLastOrDefault());
 		}
 
 		[Test]
 		public void GetLastOrDefaultOneItemList()
 		{
-			List<int> list = new() { 5 };
-			Assert.AreEqual(5, list.GetLastOrDefault());
+			Assert.AreEqual(5, _oneItemList.GetLastOrDefault());
 		}
 
 		[Test]
 		public void GetLastOrDefaultMultipleItemsList()
 		{
-			List<int> list = new() { 5, 2, 8 };
-			Assert.AreEqual(8, list.GetLastOrDefault());
+			Assert.AreEqual(8, _multipleItemList.GetLastOrDefault());
 		}
 	}
 }
