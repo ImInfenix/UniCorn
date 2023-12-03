@@ -5,15 +5,10 @@ using UniCorn.Core.AsynchronousLoading;
 using UniCorn.Navigation;
 using UnityEngine.InputSystem;
 using UnityEngine.ResourceManagement.AsyncOperations;
-#if UNICORN_FOR_ZENJECT
-using Zenject;
-#else
-using UniCorn.Standalone;
-#endif
 
 namespace UniCorn.Input
 {
-    public class InputService : AbstractAsynchronouslyLoadedService, ITickable
+    public class InputService : AbstractAsynchronouslyLoadedService, ITickableService
     {
         private readonly IInputActionCollection _inputActionCollection;
         private readonly NavigationService _navigationService;

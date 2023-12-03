@@ -5,15 +5,10 @@ using UniCorn.Input;
 using UniCorn.Logging;
 using UniCorn.Utils;
 using UnityEngine.InputSystem;
-#if UNICORN_FOR_ZENJECT
-using Zenject;
-#else
-using UniCorn.Standalone;
-#endif
 
 namespace UniCorn.Navigation
 {
-	public partial class NavigationService : ITickable, ILoggedService
+	public partial class NavigationService : ITickableService, ILoggedService
 	{
 		private readonly Dictionary<string, InputDefinition> _registeredInputDefinitions = new();
 		private readonly List<NavigationLayer> _layersList = new();
