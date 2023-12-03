@@ -7,76 +7,56 @@ namespace UniCorn.Tests.Utils
 {
 	public class ListExtensionTest
 	{
-		private readonly List<int> _nullList = null;
-		private readonly List<int> _emptyList = new();
-		private readonly List<int> _oneItemList = new() {5};
-		private readonly List<int> _multipleItemList = new() {5, 2, 8};
-
-		[Test]
-		public void IsEmptyNullList()
+		[TestCase(typeof(NullReferenceException))]
+		public void IsEmptyNullListTest(Type type)
 		{
-			Assert.Throws<NullReferenceException>(() => _nullList.IsEmpty());
+			Assert.Throws(type, () => ((List<int>) null).IsEmpty());
 		}
 
-		[Test]
-		public void IsEmptyEmptyList()
+		[TestCase(ExpectedResult = true)]
+		[TestCase(5, ExpectedResult = false)]
+		[TestCase(5, 2, ExpectedResult = false)]
+		[TestCase(5, 2, 8, ExpectedResult = false)]
+		public bool IsEmptyTest(params int[] listContent)
 		{
-			Assert.IsTrue(_emptyList.IsEmpty());
+			return new List<int>(listContent).IsEmpty();
 		}
 
-		[Test]
-		public void IsEmptyNonEmptyList()
+		[TestCase(false, typeof(NullReferenceException))]
+		[TestCase(true, typeof(ArgumentOutOfRangeException))]
+		public void GetLastNullListTest(bool initialize, Type type)
 		{
-			Assert.IsFalse(_oneItemList.IsEmpty());
+			List<int> list = null;
+
+			if (initialize)
+			{
+				list = new();
+			}
+
+			Assert.Throws(type, () => list.GetLast());
 		}
 
-		[Test]
-		public void GetLastNullList()
+		[TestCase(5, ExpectedResult = 5)]
+		[TestCase(5, 2, ExpectedResult = 2)]
+		[TestCase(5, 2, 8, ExpectedResult = 8)]
+		public int GetLastTest(params int[] listContent)
 		{
-			Assert.Throws<NullReferenceException>(() => _nullList.GetLast());
+			return new List<int>(listContent).GetLast();
 		}
 
-		[Test]
-		public void GetLastEmptyList()
+		[TestCase(typeof(NullReferenceException))]
+		public void GetLastOrDefaultNullListTest(Type type)
 		{
-			List<int> list = new();
-			Assert.Throws<ArgumentOutOfRangeException>(() => _emptyList.GetLast());
+			Assert.Throws(type, () => ((List<int>) null).GetLastOrDefault());
 		}
 
-		[Test]
-		public void GetLastOneItemList()
+		[TestCase(ExpectedResult = default(int))]
+		[TestCase(5, ExpectedResult = 5)]
+		[TestCase(5, 2, ExpectedResult = 2)]
+		[TestCase(5, 2, 8, ExpectedResult = 8)]
+		public int GetLastOrDefaultTest(params int[] listContent)
 		{
-			Assert.AreEqual(5, _oneItemList.GetLast());
-		}
-
-		[Test]
-		public void GetLastMultipleItemsList()
-		{
-			Assert.AreEqual(8, _multipleItemList.GetLast());
-		}
-
-		[Test]
-		public void GetLastOrDefaultNullList()
-		{
-			Assert.Throws<NullReferenceException>(() => _nullList.GetLastOrDefault());
-		}
-
-		[Test]
-		public void GetLastOrDefaultEmptyList()
-		{
-			Assert.AreEqual(0, _emptyList.GetLastOrDefault());
-		}
-
-		[Test]
-		public void GetLastOrDefaultOneItemList()
-		{
-			Assert.AreEqual(5, _oneItemList.GetLastOrDefault());
-		}
-
-		[Test]
-		public void GetLastOrDefaultMultipleItemsList()
-		{
-			Assert.AreEqual(8, _multipleItemList.GetLastOrDefault());
+			return new List<int>(listContent).GetLastOrDefault();
 		}
 	}
 }

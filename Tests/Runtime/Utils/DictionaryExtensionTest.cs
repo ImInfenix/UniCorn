@@ -6,71 +6,74 @@ namespace UniCorn.Tests.Utils
 {
 	public class DictionaryExtensionTest
 	{
-		[Test]
-		public void AddIfDoesntExistEmptyDictionary()
+		[TestCase(ExpectedResult = 0)]
+		[TestCase(0, 5, ExpectedResult = 1)]
+		[TestCase(0, 5, 0, 5, ExpectedResult = 1)]
+		[TestCase(0, 5, 1, 5, ExpectedResult = 2)]
+		public int AddIfDoesntExistTest(params int[] elements)
 		{
+			Assert.AreEqual(elements.Length % 2, 0);
+
 			Dictionary<int, int> dictionary = new();
-			dictionary.AddIfDoesntExist(0, 5);
-			Assert.AreEqual(5, dictionary[0]);
-			Assert.IsTrue(dictionary.Count == 1);
+			for (int i = 0; i < elements.Length; i += 2)
+			{
+				bool wasValueAlreadyHere = dictionary.TryGetValue(elements[i], out int oldValue);
+				dictionary.AddIfDoesntExist(elements[i], elements[i + 1]);
+
+				Assert.AreEqual(dictionary[elements[i]], wasValueAlreadyHere ? oldValue : elements[i + 1]);
+			}
+
+			return dictionary.Count;
 		}
 
-		[Test]
-		public void AddIfDoesntExistAlreadyExisting()
+		[TestCase(default(int), default(int), ExpectedResult = 0)]
+		[TestCase(0, 5, 0, 5, ExpectedResult = 0)]
+		[TestCase(0, 5, 2, default(int), ExpectedResult = 1)]
+		[TestCase(0, 5, 1, 6, 0, 5, ExpectedResult = 1)]
+		[TestCase(0, 5, 1, 6, 1, 6, ExpectedResult = 1)]
+		[TestCase(0, 5, 1, 6, 2, default(int), ExpectedResult = 2)]
+		public int RemoveAndRetrieveIfExistsTest(params int[] elements)
 		{
-			Dictionary<int, int> dictionary = new() { { 0, 5 } };
-			dictionary.AddIfDoesntExist(0, 10);
-			Assert.AreEqual(5, dictionary[0]);
-			Assert.IsTrue(dictionary.Count == 1);
-		}
+			const int parameterArgumentCount = 2;
+			Assert.IsTrue(elements.Length >= parameterArgumentCount);
+			Assert.AreEqual(elements.Length % 2, parameterArgumentCount % 2);
 
-		[Test]
-		public void RemoveAndRetrieveIfExistsEmptyDictionary()
-		{
 			Dictionary<int, int> dictionary = new();
-			Assert.IsFalse(dictionary.RemoveAndRetrieveIfExists(0, out int retrievedValue));
-			Assert.AreEqual(default(int), retrievedValue);
-			Assert.IsTrue(dictionary.Count == 0);
+			for (int i = 0; i < elements.Length - parameterArgumentCount; i += 2)
+			{
+				dictionary[elements[i]] = elements[i + 1];
+			}
+
+			int previousElementCount = dictionary.Count;
+			bool wasValueRetrieved = dictionary.RemoveAndRetrieveIfExists(elements[^2], out int retrievedValue);
+
+			Assert.IsTrue(dictionary.Count == (wasValueRetrieved ? previousElementCount - 1 : previousElementCount));
+			Assert.AreEqual(retrievedValue, elements[^1]);
+
+			return dictionary.Count;
 		}
 
-		[Test]
-		public void RemoveAndRetrieveIfExistsAlreadyExisting()
+		[TestCase(default(int), default(int), ExpectedResult = 1)]
+		[TestCase(0, 5, 0, 5, ExpectedResult = 1)]
+		[TestCase(0, 5, 2, default(int), ExpectedResult = 2)]
+		[TestCase(0, 5, 1, 6, 0, 5, ExpectedResult = 2)]
+		[TestCase(0, 5, 1, 6, 1, 6, ExpectedResult = 2)]
+		[TestCase(0, 5, 1, 6, 2, default(int), ExpectedResult = 3)]
+		public int GetAndAddIfDoesntExistTest(params int[] elements)
 		{
-			Dictionary<int, int> dictionary = new() { { 0, 5 } };
-			Assert.IsTrue(dictionary.Count == 1);
-			Assert.IsTrue(dictionary.RemoveAndRetrieveIfExists(0, out int retrievedValue));
-			Assert.AreEqual(5, retrievedValue);
-			Assert.IsTrue(dictionary.Count == 0);
-		}
+			const int parameterArgumentCount = 2;
+			Assert.IsTrue(elements.Length >= parameterArgumentCount);
+			Assert.AreEqual(elements.Length % 2, parameterArgumentCount % 2);
 
-		[Test]
-		public void GetAndAddIfDoesntExistEmptyDictionary()
-		{
 			Dictionary<int, int> dictionary = new();
-			Assert.IsTrue(dictionary.Count == 0);
-			Assert.AreEqual(default(int), dictionary.GetAndAddIfDoesntExist(0));
-			Assert.IsTrue(dictionary.Count == 1);
-		}
+			for (int i = 0; i < elements.Length - parameterArgumentCount; i += 2)
+			{
+				dictionary[elements[i]] = elements[i + 1];
+			}
 
-		[Test]
-		public void GetAndAddIfDoesntExistNonPrimitive()
-		{
-			Dictionary<int, List<int>> dictionary = new();
-			Assert.IsTrue(dictionary.Count == 0);
-			var newObject = dictionary.GetAndAddIfDoesntExist(0);
-			Assert.IsTrue(newObject != null);
-			Assert.IsTrue(newObject.IsEmpty());
-			Assert.IsTrue(dictionary.Count == 1);
-			Assert.IsNotNull(dictionary[0]);
-		}
-
-		[Test]
-		public void GetAndAddIfDoesntExistAlreadyExisting()
-		{
-			Dictionary<int, int> dictionary = new() { { 0, 5 } };
-			Assert.IsTrue(dictionary.Count == 1);
-			Assert.AreEqual(5, dictionary.GetAndAddIfDoesntExist(0));
-			Assert.IsTrue(dictionary.Count == 1);
+			int retrievedValue = dictionary.GetAndAddIfDoesntExist(elements[^2]);
+			Assert.AreEqual(retrievedValue, elements[^1]);
+			return dictionary.Count;
 		}
 	}
 }
