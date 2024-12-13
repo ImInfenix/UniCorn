@@ -2,7 +2,7 @@ using NUnit.Framework;
 using UniCorn.Structures;
 using UnityEngine;
 
-namespace UniCorn.Tests.Structures
+namespace UniCorn.Tests.Editor.Structures
 {
 	public class InfiniteThreeDimensionsGridTest
 	{

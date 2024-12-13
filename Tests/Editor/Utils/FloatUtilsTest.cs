@@ -1,7 +1,7 @@
 ﻿using NUnit.Framework;
 using UniCorn.Utils;
 
-namespace UniCorn.Tests.Utils
+namespace UniCorn.Tests.Editor.Utils
 {
     public class FloatUtilsTest
     {

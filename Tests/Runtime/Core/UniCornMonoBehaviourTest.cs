@@ -57,7 +57,8 @@ namespace UniCorn.Tests.Core
         [UnityTest]
         public IEnumerator CancelCoroutineTest()
         {
-            CoroutineCancellationToken cancellationToken = _coroutineHandler.RunCoroutineFromUniCorn(SimpleCounter(ITERATIONS_COUNT));
+            CoroutineCancellationToken cancellationToken =
+                _coroutineHandler.RunCoroutineFromUniCorn(SimpleCounter(ITERATIONS_COUNT));
 
             yield return null;
 

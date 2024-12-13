@@ -1,5 +1,5 @@
 {
-    "name": "UniCorn.Tests",
+    "name": "UniCorn.Editor.Tests",
     "rootNamespace": "UniCorn",
     "references": [
         "UnityEngine.TestRunner",
@@ -9,7 +9,9 @@
         "Zenject",
         "Zenject-TestFramework"
     ],
-    "includePlatforms": [],
+    "includePlatforms": [
+        "Editor"
+    ],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": true,
