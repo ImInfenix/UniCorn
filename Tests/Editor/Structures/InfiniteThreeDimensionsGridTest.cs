@@ -7,11 +7,11 @@ namespace UniCorn.Tests.Editor.Structures
 	public class InfiniteThreeDimensionsGridTest
 	{
 		private readonly Vector3 _cellSize = Vector3.one * 2;
-		private static readonly int _batchSize = 16;
+		private const int BATCH_SIZE = 16;
 
 		private readonly Vector3Int _batchEntryPosition = Vector3Int.zero;
 		private readonly Vector3Int _inBatchPosition = Vector3Int.one;
-		private readonly Vector3Int _batchEndPosition = Vector3Int.one * (_batchSize - 1);
+		private readonly Vector3Int _batchEndPosition = Vector3Int.one * (BATCH_SIZE - 1);
 		private readonly Vector3Int _negativePosition = Vector3Int.one * -1;
 
 		private const string WORD_1 = "drftgy";
@@ -23,14 +23,14 @@ namespace UniCorn.Tests.Editor.Structures
 		[SetUp]
 		public void Setup()
 		{
-			_grid = new InfiniteThreeDimensionsGrid<string>(_cellSize, _batchSize);
+			_grid = new InfiniteThreeDimensionsGrid<string>(_cellSize, BATCH_SIZE);
 		}
 
 		[Test]
 		public void ConstructorParameters()
 		{
 			Assert.AreEqual(_cellSize, _grid.CellSize);
-			Assert.AreEqual(_batchSize, _grid.BatchSize);
+			Assert.AreEqual(BATCH_SIZE, _grid.BatchSize);
 		}
 
 		[Test]
@@ -43,9 +43,9 @@ namespace UniCorn.Tests.Editor.Structures
 			Assert.AreEqual(_batchEndPosition, _grid.GetPositionInBatch(_inBatchPosition * -1));
 			Assert.AreEqual(_inBatchPosition, _grid.GetPositionInBatch(_batchEndPosition * -1));
 
-			Assert.AreEqual(_batchEntryPosition, _grid.GetPositionInBatch(_batchEntryPosition + Vector3Int.one * _batchSize));
-			Assert.AreEqual(_inBatchPosition, _grid.GetPositionInBatch(_inBatchPosition + Vector3Int.one * _batchSize));
-			Assert.AreEqual(_batchEndPosition, _grid.GetPositionInBatch(_batchEndPosition + Vector3Int.one * _batchSize));
+			Assert.AreEqual(_batchEntryPosition, _grid.GetPositionInBatch(_batchEntryPosition + Vector3Int.one * BATCH_SIZE));
+			Assert.AreEqual(_inBatchPosition, _grid.GetPositionInBatch(_inBatchPosition + Vector3Int.one * BATCH_SIZE));
+			Assert.AreEqual(_batchEndPosition, _grid.GetPositionInBatch(_batchEndPosition + Vector3Int.one * BATCH_SIZE));
 
 			Assert.AreEqual(_batchEndPosition, _grid.GetPositionInBatch(_negativePosition));
 		}
