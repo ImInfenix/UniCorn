@@ -6,6 +6,19 @@ namespace UniCorn.Tests.Editor.Utils
 {
     public class Vector2ExtensionTest
     {
+        [TestCase(0, 0, 0, 0, ExpectedResult = true)]
+        [TestCase(0, 0.5f, 0, 0.5f, ExpectedResult = true)]
+        [TestCase(0, -0.5f, 0, 0.5f, ExpectedResult = true)]
+        [TestCase(0.5f, 0, 0.5f, 0, ExpectedResult = true)]
+        [TestCase(-0.5f, 0, 0.5f, 0, ExpectedResult = true)]
+        public bool AbsTest(params float[] elements)
+        {
+            Assert.AreEqual(elements.Length, 4);
+            Vector2 input = new Vector2(elements[0], elements[1]);
+            Vector2 expectedOutput = new Vector2(elements[2], elements[3]);
+            return input.Abs() == expectedOutput;
+        }
+
         [TestCase(0, 0, 0, 0, 0, ExpectedResult = true)]
         [TestCase(0, 1, 0, 0, 1, ExpectedResult = true)]
         [TestCase(1, 0, 1, 0, 0, ExpectedResult = true)]
