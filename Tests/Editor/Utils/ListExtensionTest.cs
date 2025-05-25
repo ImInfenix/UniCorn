@@ -25,6 +25,28 @@ namespace UniCorn.Tests.Editor.Utils
 
         [TestCase(false, typeof(NullReferenceException))]
         [TestCase(true, typeof(AssertionException))]
+        public void GetFirstNullListTest(bool initialize, Type type)
+        {
+            List<int> list = null;
+
+            if (initialize)
+            {
+                list = new();
+            }
+
+            Assert.Throws(type, () => list.GetFirst());
+        }
+
+        [TestCase(5, ExpectedResult = 5)]
+        [TestCase(5, 2, ExpectedResult = 5)]
+        [TestCase(5, 2, 8, ExpectedResult = 5)]
+        public int GetFirstTest(params int[] listContent)
+        {
+            return new List<int>(listContent).GetFirst();
+        }
+
+        [TestCase(false, typeof(NullReferenceException))]
+        [TestCase(true, typeof(AssertionException))]
         public void GetLastNullListTest(bool initialize, Type type)
         {
             List<int> list = null;

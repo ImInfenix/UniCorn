@@ -10,6 +10,12 @@ namespace UniCorn.Utils
             return list.Count == 0;
         }
 
+        public static T GetFirst<T>(this IReadOnlyList<T> list)
+        {
+            Assert.IsTrue(!list.IsEmpty());
+            return list[0];
+        }
+
         public static T GetLast<T>(this IReadOnlyList<T> list)
         {
             Assert.IsTrue(!list.IsEmpty());
