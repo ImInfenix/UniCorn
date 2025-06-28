@@ -29,5 +29,18 @@ namespace UniCorn.Tests.Editor.Structures
             Assert.AreEqual(Vector2.one / 2f * -1f, aabb.Center);
             Assert.AreEqual(Vector2.one * -1f, aabb.Size);
         }
+
+        [TestCase(0, 0, 0, 0)]
+        [TestCase(0, 0, 1, 1)]
+        [TestCase(1, 1, 0, 0)]
+        [TestCase(0, 0, -1, -1)]
+        [TestCase(1, 1, -1, -1)]
+        public void OrderedToAxis(float minX, float minY, float maxX, float maxY)
+        {
+            AABB aabb = new AABB { Min = new Vector2(minX, minY), Max = new Vector2(maxX, maxY) };
+            AABB ordered = aabb.OrderedToAxis();
+            Assert.LessOrEqual(ordered.Min.x, ordered.Max.x);
+            Assert.LessOrEqual(ordered.Min.y, ordered.Max.y);
+        }
     }
 }
